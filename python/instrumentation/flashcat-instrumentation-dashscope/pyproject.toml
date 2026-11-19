@@ -1,0 +1,26 @@
+[project]
+name = "flashcat-instrumentation-dashscope"
+version = "0.1.0"
+description = "OpenTelemetry GenAI instrumentation for Alibaba Cloud DashScope (Bailian) SDK, built on opentelemetry-util-genai"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+dependencies = [
+    "opentelemetry-api~=1.43",
+    "opentelemetry-instrumentation>=0.64b0,<1",
+    "opentelemetry-util-genai~=1.3b0",
+    "wrapt>=1.17,<3",
+]
+
+[project.optional-dependencies]
+instruments = ["dashscope>=1.20,<3"]
+
+[project.entry-points.opentelemetry_instrumentor]
+dashscope = "flashcat.instrumentation.dashscope:DashScopeInstrumentor"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flashcat"]

@@ -1,0 +1,64 @@
+# flashcat-hook @VERSION@ installer for Windows. NOT verified on a real Windows machine yet.
+#
+#   & ([scriptblock]::Create((irm '<base>/hook-v@VERSION@/install.ps1'))) -Tool claude `
+#     -Endpoint <url> -Key <keyID:secret> -App <app> [-Content none|no_tool_content|full] [-User <email>] [-BaseUrl <base>]
+#
+# -BaseUrl is a base WITHOUT the version; the script appends /hook-v@VERSION@.
+param(
+    [Parameter(Mandatory = $true)][ValidateSet('claude', 'codex', 'cursor')][string]$Tool,
+    [string]$Endpoint,
+    [string]$Key,
+    [string]$App,
+    [string]$Content,
+    [string]$User,
+    [string]$BaseUrl = '@BASE_URL@'
+)
+
+$ErrorActionPreference = 'Stop'
+$Version = '@VERSION@'
+
+$cpu = $env:PROCESSOR_ARCHITECTURE
+if ($env:PROCESSOR_ARCHITEW6432) { $cpu = $env:PROCESSOR_ARCHITEW6432 }
+switch ($cpu) {
+    'AMD64' { $arch = 'amd64' }
+    'ARM64' { $arch = 'arm64' }
+    default { throw "flashcat-hook: unsupported CPU architecture $cpu" }
+}
+$name = "flashcat-hook_windows_$arch.exe"
+$url = "$($BaseUrl.TrimEnd('/'))/hook-v$Version"
+
+$tmp = Join-Path ([IO.Path]::GetTempPath()) ("flashcat-hook-" + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $tmp | Out-Null
+$dest = Join-Path $env:USERPROFILE '.flashcat\bin'
+$exe = Join-Path $dest 'flashcat-hook.exe'
+try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    Write-Host "downloading $url/$name"
+    Invoke-WebRequest -UseBasicParsing -Uri "$url/$name" -OutFile (Join-Path $tmp $name)
+    Invoke-WebRequest -UseBasicParsing -Uri "$url/SHA256SUMS" -OutFile (Join-Path $tmp 'SHA256SUMS')
+
+    $expected = $null
+    foreach ($line in Get-Content (Join-Path $tmp 'SHA256SUMS')) {
+        $f = $line -split '\s+'
+        if ($f.Length -ge 2 -and ($f[1] -eq $name -or $f[1] -eq "*$name")) { $expected = $f[0].ToLower(); break }
+    }
+    if (-not $expected) { throw "flashcat-hook: $name is not listed in SHA256SUMS" }
+    $actual = (Get-FileHash -Algorithm SHA256 -Path (Join-Path $tmp $name)).Hash.ToLower()
+    if ($actual -ne $expected) { throw "flashcat-hook: checksum mismatch for $name (expected $expected, got $actual)" }
+
+    New-Item -ItemType Directory -Force -Path $dest | Out-Null
+    Copy-Item -Force -Path (Join-Path $tmp $name) -Destination $exe
+    Write-Host "installed $exe ($Version)"
+}
+finally {
+    Remove-Item -Recurse -Force -Path $tmp -ErrorAction SilentlyContinue
+}
+
+$installArgs = @('install', $Tool)
+if ($Endpoint) { $installArgs += @('--endpoint', $Endpoint) }
+if ($Key) { $installArgs += @('--key', $Key) }
+if ($App) { $installArgs += @('--app', $App) }
+if ($Content) { $installArgs += @('--content', $Content) }
+if ($User) { $installArgs += @('--user', $User) }
+# No `exit` here: this script usually runs as a scriptblock in the user's own session.
+& $exe @installArgs

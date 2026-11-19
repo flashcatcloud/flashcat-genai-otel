@@ -1,0 +1,34 @@
+# All versions were verified on Maven Central on 2026-11-12.
+[versions]
+opentelemetry = "1.68.0"
+opentelemetry-javaagent = "2.33.1"
+opentelemetry-javaagent-alpha = "2.33.1-alpha"
+opentelemetry-proto = "1.11.1-alpha"
+protobuf = "4.36.2"
+junit = "5.14.4"
+# The following versions are used only by integration-tests.
+openai-java = "2.20.1"
+openai-java-latest = "4.101.0"
+spring-boot = "4.1.2"
+
+[libraries]
+otel-bom = { module = "io.opentelemetry:opentelemetry-bom", version.ref = "opentelemetry" }
+otel-api = { module = "io.opentelemetry:opentelemetry-api" }
+otel-sdk = { module = "io.opentelemetry:opentelemetry-sdk" }
+otel-sdk-autoconfigure = { module = "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure" }
+otel-exporter-otlp = { module = "io.opentelemetry:opentelemetry-exporter-otlp" }
+otel-sdk-testing = { module = "io.opentelemetry:opentelemetry-sdk-testing" }
+otel-proto = { module = "io.opentelemetry.proto:opentelemetry-proto", version.ref = "opentelemetry-proto" }
+protobuf-java = { module = "com.google.protobuf:protobuf-java", version.ref = "protobuf" }
+otel-javaagent = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent", version.ref = "opentelemetry-javaagent" }
+# The extension's openai-java InstrumentationModule uses the agent extension API at compile time. The agent supplies it at runtime.
+otel-javaagent-extension-api = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api", version.ref = "opentelemetry-javaagent-alpha" }
+otel-instrumentation-bom = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom", version.ref = "opentelemetry-javaagent" }
+otel-spring-boot-starter = { module = "io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+openai-java = { module = "com.openai:openai-java", version.ref = "openai-java" }
+openai-java-latest = { module = "com.openai:openai-java", version.ref = "openai-java-latest" }
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }

@@ -1,0 +1,137 @@
+{
+  "comment": "由 Python flashcat.otel._processors.DEFAULT_PATTERNS（re 模块）对边界输入求得，Go 版无环视改写的对照。",
+  "cases": [
+    {
+      "input": "13812345678,13912345678",
+      "output": "[REDACTED:phone],[REDACTED:phone]"
+    },
+    {
+      "input": "13812345678 13912345678",
+      "output": "[REDACTED:phone] [REDACTED:phone]"
+    },
+    {
+      "input": "1381234567813912345678",
+      "output": "1381234567813912345678"
+    },
+    {
+      "input": "a13812345678b",
+      "output": "a[REDACTED:phone]b"
+    },
+    {
+      "input": "x13812345678",
+      "output": "x[REDACTED:phone]"
+    },
+    {
+      "input": "手机13812345678好",
+      "output": "手机[REDACTED:phone]好"
+    },
+    {
+      "input": "6222021234567890123",
+      "output": "[REDACTED:bank_card]"
+    },
+    {
+      "input": "62220212345678901234",
+      "output": "62220212345678901234"
+    },
+    {
+      "input": "622202123456789012345",
+      "output": "622202123456789012345"
+    },
+    {
+      "input": "6222 0212 3456 7890",
+      "output": "[REDACTED:bank_card]"
+    },
+    {
+      "input": "6222-0212-3456-7890-12",
+      "output": "[REDACTED:bank_card]-12"
+    },
+    {
+      "input": "6222 0212 3456 78901234",
+      "output": "6222 [REDACTED:bank_card]"
+    },
+    {
+      "input": "1234 5678 9012 3456 7890",
+      "output": "[REDACTED:bank_card] 7890"
+    },
+    {
+      "input": "11010519491231002X",
+      "output": "[REDACTED:id_card]"
+    },
+    {
+      "input": "11010519491231002XX",
+      "output": "[REDACTED:bank_card]XX"
+    },
+    {
+      "input": "11010519491231002x1",
+      "output": "[REDACTED:bank_card]x1"
+    },
+    {
+      "input": "110105194912310021",
+      "output": "[REDACTED:id_card]"
+    },
+    {
+      "input": "1101051949123100211",
+      "output": "[REDACTED:bank_card]"
+    },
+    {
+      "input": "011010519491231002X",
+      "output": "[REDACTED:bank_card]X"
+    },
+    {
+      "input": "440301199001011234,440301199001011235",
+      "output": "[REDACTED:id_card],[REDACTED:id_card]"
+    },
+    {
+      "input": "\\u6211\\u662f13900001111\\uff0c",
+      "output": "\\u6211\\u662f[REDACTED:phone]\\uff0c"
+    },
+    {
+      "input": "\\u53f7440301199001011234\\u3002",
+      "output": "\\u53f[REDACTED:bank_card]\\u3002"
+    },
+    {
+      "input": "１３８１２３４５６７８",
+      "output": "１３８１２３４５６７８"
+    },
+    {
+      "input": "１13812345678",
+      "output": "１13812345678"
+    },
+    {
+      "input": "13812345678１",
+      "output": "13812345678１"
+    },
+    {
+      "input": "foo.bar@example.co.uk 13812345678",
+      "output": "[REDACTED:email] [REDACTED:phone]"
+    },
+    {
+      "input": "mail: a.b-c@d-e.f.gh; 6222021234567890",
+      "output": "mail: [REDACTED:email]; [REDACTED:bank_card]"
+    },
+    {
+      "input": "6222021234567890 13812345678 11010519491231002X",
+      "output": "[REDACTED:bank_card] [REDACTED:phone] [REDACTED:id_card]"
+    },
+    {
+      "input": "0013812345678",
+      "output": "0013812345678"
+    },
+    {
+      "input": "138 1234 5678",
+      "output": "138 1234 5678"
+    },
+    {
+      "input": "12345678901234567",
+      "output": "[REDACTED:bank_card]"
+    },
+    {
+      "input": "卡号：6222 0212 3456 7890 123",
+      "output": "卡号：[REDACTED:bank_card] 123"
+    },
+    {
+      "input": "",
+      "output": ""
+    }
+  ]
+}

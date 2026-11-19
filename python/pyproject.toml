@@ -1,0 +1,18 @@
+# uv workspace for the Flashcat OTel SDK monorepo for AI agent observability.
+[tool.uv.workspace]
+members = ["packages/*", "instrumentation/*"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "openai>=1.26",
+    "opentelemetry-instrumentation-genai-openai==1.3b0",
+    "dashscope>=1.20,<3",
+    "mcp>=1.20,<2",
+    "openinference-instrumentation-crewai~=1.1",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["packages/flashcat-otel/tests", "instrumentation"]

@@ -1,0 +1,38 @@
+# Release flashcat-hook when a hook-vX.Y.Z tag is pushed (hook/CONTRACT.md §6).
+name: hook-release
+
+on:
+  push:
+    tags:
+      - "hook-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: hook/go.mod
+          cache-dependency-path: hook/go.sum
+
+      - name: Test
+        working-directory: hook
+        run: go test ./...
+
+      - name: Build
+        working-directory: hook
+        run: sh scripts/release.sh "${GITHUB_REF_NAME#hook-v}"
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" hook/dist/"$GITHUB_REF_NAME"/* \
+            --verify-tag --latest=false \
+            --title "flashcat-hook ${GITHUB_REF_NAME#hook-v}" \
+            --notes "flashcat-hook ${GITHUB_REF_NAME#hook-v}. Install: curl -fsSL https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/install.sh | sh -s -- <claude|codex|cursor> --endpoint <url> --key <keyID:secret> --app <app>"

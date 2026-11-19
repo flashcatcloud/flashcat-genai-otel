@@ -1,0 +1,113 @@
+#!/bin/sh
+# flashcat-hook @VERSION@ installer.
+#
+#   curl -fsSL <base>/hook-v@VERSION@/install.sh | sh -s -- <claude|codex|cursor> \
+#     --endpoint <url> --key <keyID:secret> --app <app> [--content none|no_tool_content|full] \
+#     [--user <email>] [--base-url <base without version>]
+#
+# Downloads the binary for this OS/CPU and SHA256SUMS from
+# <base>/hook-v@VERSION@/, verifies the checksum, installs it to
+# ~/.flashcat/bin/flashcat-hook and runs `flashcat-hook install <tool> ...`.
+set -eu
+
+VERSION="@VERSION@"
+BASE_URL="@BASE_URL@"
+
+die() {
+	echo "flashcat-hook install: $*" >&2
+	exit 1
+}
+
+usage() {
+	echo "usage: install.sh <claude|codex|cursor> --endpoint <url> --key <keyID:secret> --app <app> [--content ...] [--user ...] [--base-url <url>]" >&2
+	exit 2
+}
+
+[ $# -ge 1 ] || usage
+TOOL=$1
+shift
+case $TOOL in
+claude | codex | cursor) ;;
+*) usage ;;
+esac
+
+# Take --base-url out of the arguments; pass everything else through.
+n=$#
+i=0
+while [ "$i" -lt "$n" ]; do
+	a=$1
+	shift
+	i=$((i + 1))
+	case $a in
+	--base-url)
+		[ "$i" -lt "$n" ] || die "--base-url needs a value"
+		BASE_URL=$1
+		shift
+		i=$((i + 1))
+		;;
+	--base-url=*)
+		BASE_URL=${a#--base-url=}
+		;;
+	*)
+		set -- "$@" "$a"
+		;;
+	esac
+done
+BASE_URL=${BASE_URL%/}
+
+case $(uname -s) in
+Darwin) os=darwin ;;
+Linux) os=linux ;;
+*) die "unsupported OS $(uname -s); on Windows use install.ps1" ;;
+esac
+case $(uname -m) in
+x86_64 | amd64) arch=amd64 ;;
+arm64 | aarch64) arch=arm64 ;;
+*) die "unsupported CPU $(uname -m)" ;;
+esac
+name=flashcat-hook_${os}_${arch}
+url=$BASE_URL/hook-v$VERSION
+
+fetch() {
+	if command -v curl >/dev/null 2>&1; then
+		curl -fsSL "$1" -o "$2"
+	elif command -v wget >/dev/null 2>&1; then
+		wget -q -O "$2" "$1"
+	else
+		die "need curl or wget"
+	fi
+}
+
+sha256() {
+	if command -v sha256sum >/dev/null 2>&1; then
+		sha256sum "$1" | awk '{print $1}'
+	elif command -v shasum >/dev/null 2>&1; then
+		shasum -a 256 "$1" | awk '{print $1}'
+	else
+		die "need sha256sum or shasum"
+	fi
+}
+
+tmp=$(mktemp -d 2>/dev/null || mktemp -d -t flashcat-hook)
+trap 'rm -rf "$tmp"' EXIT
+trap 'exit 1' INT TERM
+
+echo "downloading $url/$name"
+fetch "$url/$name" "$tmp/$name" || die "download failed: $url/$name"
+fetch "$url/SHA256SUMS" "$tmp/SHA256SUMS" || die "download failed: $url/SHA256SUMS"
+
+expected=$(awk -v f="$name" '$2 == f || $2 == "*" f { print $1; exit }' "$tmp/SHA256SUMS")
+[ -n "$expected" ] || die "$name is not listed in SHA256SUMS"
+actual=$(sha256 "$tmp/$name")
+[ "$expected" = "$actual" ] || die "checksum mismatch for $name (expected $expected, got $actual)"
+
+dest=$HOME/.flashcat/bin
+mkdir -p "$dest"
+cp "$tmp/$name" "$dest/.flashcat-hook.new"
+chmod +x "$dest/.flashcat-hook.new"
+mv -f "$dest/.flashcat-hook.new" "$dest/flashcat-hook"
+echo "installed $dest/flashcat-hook ($VERSION)"
+
+rm -rf "$tmp"
+trap - EXIT INT TERM
+exec "$dest/flashcat-hook" install "$TOOL" "$@"

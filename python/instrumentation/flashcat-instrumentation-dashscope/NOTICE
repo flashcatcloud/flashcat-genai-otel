@@ -1,0 +1,8 @@
+flashcat-instrumentation-dashscope
+Copyright 2026 Flashcat Cloud
+
+This product includes software derived from LoongSuite Python Agent
+(https://github.com/alibaba/loongsuite-python-agent), commit c27eb2a6,
+package instrumentation-loongsuite/loongsuite-instrumentation-dashscope,
+licensed under the Apache License, Version 2.0. Original source files carry
+"Copyright The OpenTelemetry Authors".

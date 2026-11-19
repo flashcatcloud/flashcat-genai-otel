@@ -1,0 +1,192 @@
+{
+  "comment": "由 Python 实现（flashcat.otel._processors）生成，是各语言脱敏实现的一致性基准。",
+  "replacement_l1": "[REDACTED]",
+  "sensitive_key_regex": "(^|[._-])(authorization|api[-_]?key|apikey|password|passwd|secret|client[-_]?secret|token|access[-_]?token|refresh[-_]?token|auth[-_]?token|cookie|set[-_]?cookie|private[-_]?key)$",
+  "sensitive_key_flags": "i",
+  "content_keys": [
+    "gen_ai.input.messages",
+    "gen_ai.output.messages",
+    "gen_ai.system_instructions",
+    "gen_ai.tool.call.arguments",
+    "gen_ai.tool.call.result",
+    "gen_ai.retrieval.query.text",
+    "gen_ai.retrieval.documents"
+  ],
+  "content_patterns": [
+    {
+      "name": "email",
+      "regex": "[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}",
+      "replacement": "[REDACTED:email]"
+    },
+    {
+      "name": "cn_id_card",
+      "regex": "(?<!\\d)[1-9]\\d{5}(?:19|20)\\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\\d|3[01])\\d{3}[\\dXx](?![\\dXx])",
+      "replacement": "[REDACTED:id_card]"
+    },
+    {
+      "name": "bank_card",
+      "regex": "(?<!\\d)(?:\\d{4}[ \\-]?){3}\\d{4,7}(?!\\d)",
+      "replacement": "[REDACTED:bank_card]"
+    },
+    {
+      "name": "cn_mobile",
+      "regex": "(?<!\\d)1[3-9]\\d{9}(?!\\d)",
+      "replacement": "[REDACTED:phone]"
+    }
+  ],
+  "scan_limit_bytes": 262144,
+  "truncate_bytes": 524288,
+  "truncated_attr": "flashcat.content_truncated",
+  "key_cases": [
+    {
+      "key": "authorization",
+      "masked": true
+    },
+    {
+      "key": "http.request.header.authorization",
+      "masked": true
+    },
+    {
+      "key": "api_key",
+      "masked": true
+    },
+    {
+      "key": "api-key",
+      "masked": true
+    },
+    {
+      "key": "apikey",
+      "masked": true
+    },
+    {
+      "key": "db.password",
+      "masked": true
+    },
+    {
+      "key": "client_secret",
+      "masked": true
+    },
+    {
+      "key": "app.access_token",
+      "masked": true
+    },
+    {
+      "key": "refresh-token",
+      "masked": true
+    },
+    {
+      "key": "auth_token",
+      "masked": true
+    },
+    {
+      "key": "cookie",
+      "masked": true
+    },
+    {
+      "key": "http.response.header.set-cookie",
+      "masked": true
+    },
+    {
+      "key": "private_key",
+      "masked": true
+    },
+    {
+      "key": "my.secret",
+      "masked": true
+    },
+    {
+      "key": "x.token",
+      "masked": true
+    },
+    {
+      "key": "passwd",
+      "masked": true
+    },
+    {
+      "key": "user.passwd",
+      "masked": true
+    },
+    {
+      "key": "gen_ai.usage.input_tokens",
+      "masked": false
+    },
+    {
+      "key": "gen_ai.usage.output_tokens",
+      "masked": false
+    },
+    {
+      "key": "gen_ai.token.type",
+      "masked": false
+    },
+    {
+      "key": "llm.token_count.prompt",
+      "masked": false
+    },
+    {
+      "key": "secret_name",
+      "masked": false
+    },
+    {
+      "key": "tokenizer",
+      "masked": false
+    },
+    {
+      "key": "password_hint",
+      "masked": false
+    },
+    {
+      "key": "gen_ai.request.max_tokens",
+      "masked": false
+    }
+  ],
+  "content_cases": [
+    {
+      "input": "联系邮箱 zhang.san+test@example.com，谢谢",
+      "output": "联系邮箱 [REDACTED:email]，谢谢"
+    },
+    {
+      "input": "手机号13812345678请回电",
+      "output": "手机号[REDACTED:phone]请回电"
+    },
+    {
+      "input": "身份证 11010519491231002X 已核验",
+      "output": "身份证 [REDACTED:id_card] 已核验"
+    },
+    {
+      "input": "卡号 6222 0212 3456 7890 123 转账",
+      "output": "卡号 [REDACTED:bank_card] 123 转账"
+    },
+    {
+      "input": "卡号6222021234567890",
+      "output": "卡号[REDACTED:bank_card]"
+    },
+    {
+      "input": "订单号 20261112000123 金额 1380000",
+      "output": "订单号 20261112000123 金额 1380000"
+    },
+    {
+      "input": "电话 13812345678，邮箱 a@b.cn，证件 440301199001011234",
+      "output": "电话 [REDACTED:phone]，邮箱 [REDACTED:email]，证件 [REDACTED:id_card]"
+    },
+    {
+      "input": "[{\"role\": \"user\", \"parts\": [{\"type\": \"text\", \"content\": \"\\u6211\\u7684\\u624b\\u673a\\u662f13900001111\\uff0c\\u90ae\\u7bb1li@corp.com.cn\"}]}]",
+      "output": "[{\"role\": \"user\", \"parts\": [{\"type\": \"text\", \"content\": \"\\u6211\\u7684\\u624b\\u673a\\u662f[REDACTED:phone]\\uff0c\\u90ae\\[REDACTED:email]\"}]}]"
+    },
+    {
+      "input": "no pii here 12345",
+      "output": "no pii here 12345"
+    },
+    {
+      "input": "1381234567",
+      "output": "1381234567"
+    },
+    {
+      "input": "138123456789",
+      "output": "138123456789"
+    },
+    {
+      "input": "a@b",
+      "output": "a@b"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+flashcat-otel/go/instrumentation/openai
+Copyright 2026 Flashcat Cloud
+
+This product includes software derived from OpenTelemetry Go Compile
+Instrumentation (https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation),
+commit 1daafa0b299ff4cef3b5a5d883cb51dde4a09fec,
+paths instrumentation/github.com/openai/openai-go/v3/middleware.go,
+instrumentation/github.com/openai/openai-go/internal/streaming/streaming.go
+and pkg/netutil/http.go, licensed under the Apache License, Version 2.0
+(http://www.apache.org/licenses/LICENSE-2.0). Original source files carry
+"Copyright The OpenTelemetry Authors".

@@ -1,0 +1,97 @@
+{
+  "name": "@flashcat/otel",
+  "version": "0.1.0",
+  "description": "Flashcat OTel SDK for AI agent observability: one-line setup on top of OpenTelemetry GenAI instrumentations",
+  "license": "Apache-2.0",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./register": {
+      "import": {
+        "types": "./dist/register.d.mts",
+        "default": "./dist/register.mjs"
+      },
+      "require": {
+        "types": "./dist/register.d.ts",
+        "default": "./dist/register.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": [
+    "./dist/register.mjs",
+    "./dist/register.cjs"
+  ],
+  "engines": {
+    "node": ">=22.15.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:setup": "node test/setup.mjs",
+    "test": "node --test --test-concurrency=4 test/*.test.mjs"
+  },
+  "keywords": [
+    "opentelemetry",
+    "genai",
+    "llm",
+    "agent",
+    "observability",
+    "flashcat"
+  ],
+  "dependencies": {
+    "@opentelemetry/api": "^1.10.0",
+    "@opentelemetry/context-async-hooks": "^3.1.1",
+    "@opentelemetry/core": "^3.1.1",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.301.1",
+    "@opentelemetry/instrumentation": "^0.301.1",
+    "@opentelemetry/instrumentation-anthropic": "^0.2.0",
+    "@opentelemetry/instrumentation-openai": "^0.23.0",
+    "@opentelemetry/instrumentation-openai-agents": "^0.2.0",
+    "@opentelemetry/otlp-exporter-base": "^0.301.1",
+    "@opentelemetry/otlp-transformer": "^0.301.1",
+    "@opentelemetry/resources": "^3.1.1",
+    "@opentelemetry/sdk-metrics": "^3.1.1",
+    "@opentelemetry/sdk-trace": "^3.1.1"
+  },
+  "peerDependencies": {
+    "@arizeai/openinference-instrumentation-openai": "^4.4.5",
+    "@arizeai/openinference-instrumentation-langchain": "^4.2.0",
+    "@ai-sdk/otel": "^1.0.0",
+    "@opentelemetry/instrumentation-aws-sdk": "^0.80.0"
+  },
+  "peerDependenciesMeta": {
+    "@arizeai/openinference-instrumentation-openai": {
+      "optional": true
+    },
+    "@arizeai/openinference-instrumentation-langchain": {
+      "optional": true
+    },
+    "@ai-sdk/otel": {
+      "optional": true
+    },
+    "@opentelemetry/instrumentation-aws-sdk": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}

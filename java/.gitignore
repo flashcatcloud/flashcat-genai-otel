@@ -1,0 +1,12 @@
+# Gradle build outputs and caches (gradle/wrapper/gradle-wrapper.jar must be committed; do not ignore it)
+.gradle/
+build/
+**/build/
+.kotlin/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+out/
+bin/
