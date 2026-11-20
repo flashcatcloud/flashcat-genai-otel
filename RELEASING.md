@@ -1,6 +1,6 @@
 # Releasing and installing
 
-PyPI, npm, and Maven Central releases are pending. Packages are distributed through this repository's GitHub Releases and Go module tags.
+GitHub Releases contain installable artifacts, and Go packages use module tags. The Python packages also have a dedicated publishing workflow. npm and Maven Central releases are pending.
 
 ## Releasing
 
@@ -17,6 +17,12 @@ PyPI, npm, and Maven Central releases are pending. Packages are distributed thro
 | `flashcat-otel-<version>.jar` / `.pom` | Java application API (`cloud.flashcat:flashcat-otel`) |
 | `flashcat-otel-java-maven-repo-<version>.zip` | File-based Maven repository containing the two Java artifacts above. Use it as a local repository or import it into Nexus or Artifactory |
 | `SHA256SUMS` | Checksums for all files |
+
+## Publish Python packages
+
+Configure GitHub Trusted Publishers for `flashcat-instrumentation-dashscope`, `flashcat-instrumentation-mcp`, and `flashcat-otel` on each package index. Use owner `flashcatcloud`, repository `flashcat-otel`, workflow `python-publish.yml`, and environment `testpypi` on TestPyPI or `pypi` on PyPI.
+
+Run the `Publish Python packages` workflow on `main` with `testpypi` selected. It publishes the two instrumentation packages before the SDK and checks the `[all]` install in a fresh environment. After the test run passes, run the workflow from the same commit with `pypi` selected and check the production install job.
 
 ## Install from GitHub Releases
 

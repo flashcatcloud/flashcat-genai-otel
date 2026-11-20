@@ -5,6 +5,7 @@ description = "Flashcat OTel SDK for AI agent observability: one-line init on to
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
+authors = [{ name = "Flashcat" }]
 dependencies = [
     "opentelemetry-api~=1.43",
     "opentelemetry-sdk~=1.43",
@@ -28,6 +29,10 @@ crewai = ["openinference-instrumentation-crewai~=1.1"]
 all = [
     "flashcat-otel[openai,anthropic,langchain,openai-agents,llama-index,google-genai,bedrock,dashscope,mcp,crewai]",
 ]
+
+[project.urls]
+Homepage = "https://flashcat.cloud/"
+Source = "https://github.com/flashcatcloud/flashcat-otel"
 
 [project.entry-points.opentelemetry_distro]
 flashcat = "flashcat.otel._distro:FlashcatDistro"

@@ -2,10 +2,10 @@
 
 The Flashcat OTel SDK for AI agent observability integrates with OpenTelemetry GenAI instrumentation in one line.
 
-Install from this repository's GitHub Releases while PyPI publication is pending. For extras such as DashScope and MCP instrumentation, see [RELEASING.md](../../../RELEASING.md#install-from-github-releases).
+For PyPI releases, choose the extra that matches your application. This example instruments OpenAI. For wheel downloads and offline installs, see the [GitHub Releases installation guide](https://github.com/flashcatcloud/flashcat-otel/blob/main/RELEASING.md#install-from-github-releases).
 
 ```bash
-pip install 'flashcat-otel[openai] @ https://github.com/flashcatcloud/flashcat-otel/releases/download/v0.1.0/flashcat_otel-0.1.0-py3-none-any.whl'
+pip install 'flashcat-otel[openai]'
 export OTEL_SERVICE_NAME=kefu-agent
 export FLASHCAT_ENDPOINT=https://ingest.example.com/v1/traces   # full URL including /v1/traces
 export FLASHCAT_API_KEY=keyID:secret                              # the SDK handles Basic encoding

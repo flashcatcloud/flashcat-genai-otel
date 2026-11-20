@@ -5,6 +5,7 @@ description = "OpenTelemetry GenAI instrumentation for Alibaba Cloud DashScope (
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
+authors = [{ name = "Flashcat" }]
 dependencies = [
     "opentelemetry-api~=1.43",
     "opentelemetry-instrumentation>=0.64b0,<1",
@@ -14,6 +15,10 @@ dependencies = [
 
 [project.optional-dependencies]
 instruments = ["dashscope>=1.20,<3"]
+
+[project.urls]
+Homepage = "https://flashcat.cloud/"
+Source = "https://github.com/flashcatcloud/flashcat-otel"
 
 [project.entry-points.opentelemetry_instrumentor]
 dashscope = "flashcat.instrumentation.dashscope:DashScopeInstrumentor"

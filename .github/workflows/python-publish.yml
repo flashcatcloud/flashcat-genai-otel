@@ -1,0 +1,130 @@
+name: Publish Python packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      index:
+        description: Package index
+        type: choice
+        options: [testpypi, pypi]
+        default: testpypi
+
+permissions: {}
+
+concurrency:
+  group: python-publish-${{ inputs.index }}
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.metadata.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Check package versions
+        id: metadata
+        working-directory: python
+        run: |
+          uv run --no-project --python 3.12 python - <<'PY' >> "$GITHUB_OUTPUT"
+          from pathlib import Path
+          import tomllib
+
+          packages = (
+              "packages/flashcat-otel",
+              "instrumentation/flashcat-instrumentation-dashscope",
+              "instrumentation/flashcat-instrumentation-mcp",
+          )
+          versions = {
+              package: tomllib.loads((Path(package) / "pyproject.toml").read_text())["project"]["version"]
+              for package in packages
+          }
+          if len(set(versions.values())) != 1:
+              raise SystemExit(f"Python package versions must match: {versions}")
+          print(f"version={versions[packages[0]]}")
+          PY
+      - name: Build distributions
+        working-directory: python
+        run: |
+          uv build --package flashcat-instrumentation-dashscope --out-dir ../dist/dashscope
+          uv build --package flashcat-instrumentation-mcp --out-dir ../dist/mcp
+          uv build --package flashcat-otel --out-dir ../dist/sdk
+      - name: Check distribution metadata
+        run: uvx --python 3.12 twine check --strict dist/*/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/
+          if-no-files-found: error
+
+  publish-instrumentation:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.index }}
+    permissions:
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        package: [dashscope, mcp]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/${{ matrix.package }}/
+          repository-url: ${{ inputs.index == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+
+  publish-sdk:
+    needs: publish-instrumentation
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.index }}
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/sdk/
+          repository-url: ${{ inputs.index == 'testpypi' && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+
+  verify-install:
+    needs: [build, publish-sdk]
+    runs-on: ubuntu-latest
+    env:
+      INDEX: ${{ inputs.index }}
+      VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install all integrations in a fresh environment
+        run: |
+          python -m venv "$RUNNER_TEMP/verify-pypi"
+          source "$RUNNER_TEMP/verify-pypi/bin/activate"
+          requirements=("flashcat-otel[all]==$VERSION")
+          if [[ "$INDEX" == testpypi ]]; then
+            # Download the first-party wheels from TestPyPI and resolve third-party dependencies on PyPI.
+            wheels="$RUNNER_TEMP/testpypi-wheels"
+            python -m pip download --no-deps --only-binary=:all: \
+              --index-url https://test.pypi.org/simple/ --dest "$wheels" \
+              "flashcat-otel==$VERSION" "flashcat-instrumentation-dashscope==$VERSION" \
+              "flashcat-instrumentation-mcp==$VERSION"
+            sdk_wheel=("$wheels"/flashcat_otel-*.whl)
+            requirements=(
+              "${sdk_wheel[0]}[all]"
+              "$wheels"/flashcat_instrumentation_dashscope-*.whl
+              "$wheels"/flashcat_instrumentation_mcp-*.whl
+            )
+          fi
+          python -m pip install --index-url https://pypi.org/simple/ "${requirements[@]}"
+          python -m pip check
+          python -c 'from flashcat import otel; from flashcat.instrumentation.dashscope import DashScopeInstrumentor; from flashcat.instrumentation.mcp import MCPInstrumentor'
