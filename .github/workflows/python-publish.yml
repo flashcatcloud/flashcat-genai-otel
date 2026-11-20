@@ -63,7 +63,7 @@ jobs:
   publish-instrumentation:
     needs: build
     runs-on: ubuntu-latest
-    environment: ${{ inputs.index }}
+    environment: ${{ matrix.package == 'mcp' && format('{0}-mcp', inputs.index) || inputs.index }}
     permissions:
       id-token: write
     strategy:
@@ -83,7 +83,7 @@ jobs:
   publish-sdk:
     needs: publish-instrumentation
     runs-on: ubuntu-latest
-    environment: ${{ inputs.index }}
+    environment: ${{ format('{0}-sdk', inputs.index) }}
     permissions:
       id-token: write
     steps:

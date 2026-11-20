@@ -20,7 +20,13 @@ GitHub Releases contain installable artifacts, and Go packages use module tags. 
 
 ## Publish Python packages
 
-Configure GitHub Trusted Publishers for `flashcat-instrumentation-dashscope`, `flashcat-instrumentation-mcp`, and `flashcat-otel` on each package index. Use owner `flashcatcloud`, repository `flashcat-otel`, workflow `python-publish.yml`, and environment `testpypi` on TestPyPI or `pypi` on PyPI.
+Configure GitHub Trusted Publishers on each package index. Use owner `flashcatcloud`, repository `flashcat-otel`, and workflow `python-publish.yml`. Each package uses a separate environment so its pending publisher can be registered before the first release.
+
+| Package | TestPyPI environment | PyPI environment |
+|---|---|---|
+| `flashcat-instrumentation-dashscope` | `testpypi` | `pypi` |
+| `flashcat-instrumentation-mcp` | `testpypi-mcp` | `pypi-mcp` |
+| `flashcat-otel` | `testpypi-sdk` | `pypi-sdk` |
 
 Run the `Publish Python packages` workflow on `main` with `testpypi` selected. It publishes the two instrumentation packages before the SDK and checks the `[all]` install in a fresh environment. After the test run passes, run the workflow from the same commit with `pypi` selected and check the production install job.
 
