@@ -390,9 +390,13 @@ func TestDeliveryFailureKeepsEventsAndRetriesOnce(t *testing.T) {
 	if len(turns) != 2 || turns[0].TurnKey != x.gen || turns[1].TurnKey != g2 {
 		t.Fatalf("retry turns: %d %v", len(turns), keys(turns))
 	}
-	// The retried turn is exactly the one a successful first delivery sends.
+	// The retried turn is exactly the one a successful first delivery sends. Compare the JSON:
+	// retried times come back from the state file in UTC, so with TZ=UTC their Location
+	// differs from time.Local and reflect.DeepEqual fails although the instants match.
 	want, _ := run(t, evs, nil, nil)
-	if !reflect.DeepEqual(turns[0], want[0]) {
+	got, _ := json.Marshal(turns[0])
+	exp, _ := json.Marshal(want[0])
+	if !bytes.Equal(got, exp) {
 		t.Error("retried turn differs from the original")
 	}
 	if g := turns[1]; g.Input != "second" || g.Output != "done" || len(g.Steps) != 1 || g.Steps[0].LLM.Usage.InputTokens != 100 {
