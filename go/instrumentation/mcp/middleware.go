@@ -33,7 +33,7 @@ import (
 )
 
 // Version is the instrumentation module version and is used as the scope version on spans.
-const Version = "0.1.0"
+const Version = "0.2.0"
 
 // ScopeName is the instrumentation scope name for spans created by this module.
 const ScopeName = "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp"

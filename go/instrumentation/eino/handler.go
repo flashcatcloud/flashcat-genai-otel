@@ -35,7 +35,7 @@ import (
 )
 
 // Version is the version of this instrumentation module.
-const Version = "0.1.0"
+const Version = "0.2.0"
 
 // ScopeName is the instrumentation scope name for spans created by this module.
 const ScopeName = "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino"

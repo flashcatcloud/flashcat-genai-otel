@@ -214,7 +214,7 @@ console.log('RESULT:' + JSON.stringify({ before, d, again: otel.diagnostics() })
   const keys = ['sdk', 'enabled', 'service_name', 'environment', 'endpoint', 'problems', 'notes', 'provider', 'content', 'instrumentations', 'export', 'semantics'];
   for (const d of [result.d, result.again]) {
     assert.deepEqual(Object.keys(d).sort(), [...keys].sort());
-    assert.deepEqual(d.sdk, { name: 'flashcat-genai-otel', version: '0.1.0', language: 'nodejs' });
+    assert.deepEqual(d.sdk, { name: 'flashcat-genai-otel', version: '0.2.0', language: 'nodejs' });
     assert.deepEqual(Object.keys(d.provider).sort(), ['exporter_mode', 'metrics', 'situation']);
     assert.deepEqual(Object.keys(d.semantics).sort(), ['masked_spans', 'nested_inference_spans', 'orphan_inference_spans', 'truncated_spans']);
     for (const k of ['ok', 'network', 'dropped_queue_full', 'last_error']) assert.ok(k in d.export, k);

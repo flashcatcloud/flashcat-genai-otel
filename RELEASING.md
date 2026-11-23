@@ -32,33 +32,33 @@ Run the `Publish Python packages` workflow on `main` with `testpypi` selected. I
 
 ## Install from GitHub Releases
 
-The examples below use `v0.1.0`, with the download URL prefix `https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0`.
+The examples below use `v0.2.0`, with the download URL prefix `https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0`.
 
 **Python** (`[all]` includes DashScope and MCP instrumentation from the release, with the remaining dependencies installed from PyPI)
 
 ```bash
 mkdir -p flashcat-genai-otel-pkgs
 for f in flashcat_genai_otel flashcat_instrumentation_dashscope flashcat_instrumentation_mcp; do
-  curl -fL -o flashcat-genai-otel-pkgs/$f-0.1.0-py3-none-any.whl https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/$f-0.1.0-py3-none-any.whl
+  curl -fL -o flashcat-genai-otel-pkgs/$f-0.2.0-py3-none-any.whl https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/$f-0.2.0-py3-none-any.whl
 done
 pip install --find-links flashcat-genai-otel-pkgs 'flashcat-genai-otel[all]'
 ```
 
-If you only use instrumentation available outside the release, such as `[openai]`, you can install directly from the wheel URL with `pip install 'flashcat-genai-otel[openai] @ https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat_genai_otel-0.1.0-py3-none-any.whl'`.
+If you only use instrumentation available outside the release, such as `[openai]`, you can install directly from the wheel URL with `pip install 'flashcat-genai-otel[openai] @ https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/flashcat_genai_otel-0.2.0-py3-none-any.whl'`.
 
 **Node.js**
 
 ```bash
-npm install https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-0.1.0.tgz
+npm install https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/flashcat-genai-otel-0.2.0.tgz
 ```
 
 **Go**
 
 ```bash
-go get github.com/flashcatcloud/flashcat-genai-otel/go@v0.1.0
-go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai@v0.1.0   # If you use openai-go
-go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino@v0.1.0     # If you use Eino
-go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.1.0      # If you use the MCP Go SDK
+go get github.com/flashcatcloud/flashcat-genai-otel/go@v0.2.0
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai@v0.2.0   # If you use openai-go
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino@v0.2.0     # If you use Eino
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.2.0      # If you use the MCP Go SDK
 ```
 
 **Java** (use the extension with upstream OpenTelemetry Java Agent 2.33.1)
@@ -67,15 +67,15 @@ go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.1.
 mkdir -p /opt/flashcat
 curl -fL -o /opt/flashcat/opentelemetry-javaagent.jar \
   https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.33.1/opentelemetry-javaagent.jar
-curl -fL -o /opt/flashcat/flashcat-genai-otel-agent-extension-0.1.0.jar https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-agent-extension-0.1.0.jar
+curl -fL -o /opt/flashcat/flashcat-genai-otel-agent-extension-0.2.0.jar https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/flashcat-genai-otel-agent-extension-0.2.0.jar
 ```
 
 To use `cloud.flashcat:flashcat-genai-otel` to annotate your code with calls such as `Flashcat.agent` / `tool` / `session`, extract the Maven repository ZIP and add it as a repository, or install the artifacts in your local repository as shown below.
 
 ```bash
-curl -fL -O https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-0.1.0.jar
-curl -fL -O https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-0.1.0.pom
-mvn install:install-file -Dfile=flashcat-genai-otel-0.1.0.jar -DpomFile=flashcat-genai-otel-0.1.0.pom
+curl -fL -O https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/flashcat-genai-otel-0.2.0.jar
+curl -fL -O https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/flashcat-genai-otel-0.2.0.pom
+mvn install:install-file -Dfile=flashcat-genai-otel-0.2.0.jar -DpomFile=flashcat-genai-otel-0.2.0.pom
 ```
 
 For on-premises environments, copy these files to the internal network (private PyPI, npm, or Maven repositories, GOPROXY, or vendor) and install from there.

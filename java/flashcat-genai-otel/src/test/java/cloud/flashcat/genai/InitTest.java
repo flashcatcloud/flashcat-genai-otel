@@ -111,7 +111,7 @@ class InitTest {
         assertEquals("kefu-agent", chat.resource.get("service.name"));
         assertEquals("prod", chat.resource.get("deployment.environment.name"));
         assertEquals("flashcat-genai-otel", chat.resource.get("telemetry.distro.name"));
-        assertEquals("0.1.0", chat.resource.get("telemetry.distro.version"));
+        assertEquals("0.2.0", chat.resource.get("telemetry.distro.version"));
         assertEquals("java", chat.resource.get("telemetry.sdk.language"));
         for (FakeIngest.ReceivedSpan s : Arrays.asList(chat, agent, tool)) {
             assertEquals("c-123", s.attr("gen_ai.conversation.id"), s.name);
@@ -126,7 +126,7 @@ class InitTest {
         assertEquals("invoke_agent kefu", agent.name);
         assertEquals("kefu", agent.attr("gen_ai.agent.name"));
         assertEquals("flashcat.genai", agent.scope);
-        assertEquals("0.1.0", agent.scopeVersion);
+        assertEquals("0.2.0", agent.scopeVersion);
 
         Diagnostics after = FlashcatGenAI.diagnostics();
         Map<?, ?> export = (Map<?, ?>) after.get("export");
@@ -302,7 +302,7 @@ class InitTest {
         assertEquals(expected, new ArrayList<String>(parsed.keySet()));
         Map<?, ?> sdk = (Map<?, ?>) parsed.get("sdk");
         assertEquals("flashcat-genai-otel", sdk.get("name"));
-        assertEquals("0.1.0", sdk.get("version"));
+        assertEquals("0.2.0", sdk.get("version"));
         assertEquals("java", sdk.get("language"));
         assertEquals(Arrays.asList("situation", "exporter_mode", "metrics"), new ArrayList<Object>(((Map<?, ?>) parsed.get("provider")).keySet()));
         Map<?, ?> export = (Map<?, ?>) parsed.get("export");

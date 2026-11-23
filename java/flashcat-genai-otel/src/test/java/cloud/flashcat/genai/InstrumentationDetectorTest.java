@@ -72,7 +72,7 @@ class InstrumentationDetectorTest {
 
         // The extension is present and reports Responses instrumentation disabled by configuration.
         System.setProperty(InstrumentationDetector.PROP_OPENAI_INSTALLED, "disabled");
-        System.setProperty(AgentDetector.PROP_EXTENSION, "0.1.0");
+        System.setProperty(AgentDetector.PROP_EXTENSION, "0.2.0");
         r = InstrumentationDetector.inspect(true, cl);
         assertEquals("disabled", entry(r, "openai-java", "responses").get("status"));
         assertTrue(r.problems.get(0).contains("Responses API"), r.problems.toString());

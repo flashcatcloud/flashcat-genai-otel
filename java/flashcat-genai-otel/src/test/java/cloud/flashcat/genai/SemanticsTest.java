@@ -85,7 +85,7 @@ class SemanticsTest {
         assertEquals("kefu", attr(agent, "gen_ai.agent.name"));
         assertEquals("客服 Agent", attr(agent, "gen_ai.agent.description"));
         assertEquals("flashcat.genai", agent.getInstrumentationScopeInfo().getName());
-        assertEquals("0.1.0", agent.getInstrumentationScopeInfo().getVersion());
+        assertEquals("0.2.0", agent.getInstrumentationScopeInfo().getVersion());
 
         SpanData tool = span("execute_tool search_kb");
         assertEquals("execute_tool", attr(tool, "gen_ai.operation.name"));

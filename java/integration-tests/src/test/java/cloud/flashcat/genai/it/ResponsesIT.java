@@ -101,7 +101,7 @@ class ResponsesIT {
             assertEquals(7, spans.size(), spans + "\n" + out);
             for (FakeIngest.ReceivedSpan s : spans) {
                 assertEquals("flashcat.genai.openai-java", s.scope);
-                assertEquals("0.1.0", s.scopeVersion);
+                assertEquals("0.2.0", s.scopeVersion);
                 assertEquals("chat gpt-4o-mini", s.name);
                 assertEquals(SPAN_KIND_CLIENT, s.kind);
                 assertEquals(agent.spanId, s.parentSpanId, "The model span should be a child of the agent span");
