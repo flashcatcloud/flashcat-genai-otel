@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"context"
@@ -234,7 +234,7 @@ func TestSituationAEndToEnd(t *testing.T) {
 	spans := c.spans(t)
 	ops := byOp(spans)
 	chat, agent, tool := ops["chat"], ops["invoke_agent"], ops["execute_tool"]
-	if chat.Resource["service.name"] != "kefu-agent" || chat.Resource["telemetry.distro.name"] != "flashcat-otel" ||
+	if chat.Resource["service.name"] != "kefu-agent" || chat.Resource["telemetry.distro.name"] != "flashcat-genai-otel" ||
 		chat.Resource["telemetry.distro.version"] != Version || chat.Resource["deployment.environment.name"] != "prod" ||
 		chat.Resource["telemetry.sdk.language"] != "go" {
 		t.Fatalf("resource: %v", chat.Resource)
@@ -486,7 +486,7 @@ func TestDiagnosticsShape(t *testing.T) {
 	if strings.Join(keys, ",") != want {
 		t.Fatalf("keys = %s", strings.Join(keys, ","))
 	}
-	if path(d, "sdk", "name") != "flashcat-otel" || path(d, "sdk", "version") != Version || path(d, "sdk", "language") != "go" {
+	if path(d, "sdk", "name") != "flashcat-genai-otel" || path(d, "sdk", "version") != Version || path(d, "sdk", "language") != "go" {
 		t.Fatalf("sdk: %v", d["sdk"])
 	}
 	if _, ok := d["instrumentations"].([]any); !ok {

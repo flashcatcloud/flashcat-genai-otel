@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"unicode/utf8"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // MaxAttrChars is the per-attribute content limit (CONTRACT §4.4).

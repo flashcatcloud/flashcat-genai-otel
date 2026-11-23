@@ -1,5 +1,5 @@
 {
-  "comment": "由 Python flashcat.otel._processors.DEFAULT_PATTERNS（re 模块）对边界输入求得，Go 版无环视改写的对照。",
+  "comment": "由 Python flashcat.genai._processors.DEFAULT_PATTERNS（re 模块）对边界输入求得，Go 版无环视改写的对照。",
   "cases": [
     {
       "input": "13812345678,13912345678",

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // Fixtures are sanitized real rollouts (codex-cli 0.167/0.169), see

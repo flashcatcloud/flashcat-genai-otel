@@ -23,7 +23,7 @@ test('Scenario B keeps instrumentation, falls back to none, and suggests spanPro
     const code = `
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { SimpleSpanProcessor, InMemorySpanExporter } from '@opentelemetry/sdk-trace';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const mem = new InMemorySpanExporter();
 new NodeSDK({ serviceName: 'order-svc', spanProcessors: [new SimpleSpanProcessor({ exporter: mem })] }).start();
 const d = otel.init({ serviceName: 'order-svc' });
@@ -57,9 +57,9 @@ console.log('RESULT:' + JSON.stringify({ d, mem: mem.getFinishedSpans().map((s) 
 export const README_INSTRUMENTATION = `// instrumentation.mjs
 import { register } from 'node:module';
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 
-register('@opentelemetry/instrumentation/hook.mjs', import.meta.resolve('@flashcat/otel'));   // Required for ESM applications.
+register('@opentelemetry/instrumentation/hook.mjs', import.meta.resolve('@flashcat/genai-otel'));   // Required for ESM applications.
 
 const sdk = new NodeSDK({
   serviceName: 'kefu-agent',
@@ -77,7 +77,7 @@ test('README setup with otel.spanProcessor() in NodeSDK, reuse mode, and node --
     mkdirSync(join(dir, 'scripts'), { recursive: true });
     writeFileSync(instr, README_INSTRUMENTATION);
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
 const answer = otel.agent('kefu', async (q) => (await client.chat.completions.create({ model: 'gpt-4o', messages: [{ role: 'user', content: q }] })).choices[0].message.content);
@@ -118,12 +118,12 @@ test('The same setup works in CommonJS with --require instrumentation.cjs', asyn
     const instr = join(dir, 'scripts', `instrumentation-${Date.now()}.cjs`);
     writeFileSync(instr, `
 const { NodeSDK } = require('@opentelemetry/sdk-node');
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 new NodeSDK({ serviceName: 'kefu-agent', spanProcessors: [otel.spanProcessor()] }).start();
 otel.init({ exporter: 'reuse' });
 `);
     const code = `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 const { OpenAI } = require('openai');
 (async () => {
   const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
@@ -149,7 +149,7 @@ const { OpenAI } = require('openai');
 test('Without an endpoint, spanProcessor() only processes sessions and reports the reason in problems without throwing', async () => {
   const code = `
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const p = otel.spanProcessor();
 new NodeSDK({ serviceName: 'x', spanProcessors: [p] }).start();
 const d = otel.init({ exporter: 'reuse' });
@@ -164,7 +164,7 @@ test('Scenario C reuses an existing provider that already exports to Flashcat', 
   try {
     const code = `
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 new NodeSDK({ serviceName: 'order-svc' }).start();
 const d = otel.init({ serviceName: 'order-svc', metrics: false });
 console.log('RESULT:' + JSON.stringify(d));
@@ -190,7 +190,7 @@ test('shutdown closes only SDK-owned providers', async () => {
   const code = `
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { SimpleSpanProcessor, InMemorySpanExporter } from '@opentelemetry/sdk-trace';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const mem = new InMemorySpanExporter();
 new NodeSDK({ serviceName: 'x', spanProcessors: [new SimpleSpanProcessor({ exporter: mem })] }).start();
 otel.init({ serviceName: 'x', exporter: 'none' });

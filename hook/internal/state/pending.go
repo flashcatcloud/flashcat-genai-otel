@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
 )
 
 // Pending is a hook event whose delivery failed, kept so that any later hook

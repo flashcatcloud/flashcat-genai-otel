@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 	"github.com/openai/openai-go/v3/option"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -40,7 +40,7 @@ import (
 const Version = "0.1.0"
 
 // ScopeName is the instrumentation scope name for spans and metrics created by this module.
-const ScopeName = "github.com/flashcatcloud/flashcat-otel/go/instrumentation/openai"
+const ScopeName = "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai"
 
 const (
 	maxRequestBodySize  = 1 << 20 // 1 MB
@@ -185,7 +185,7 @@ type middleware struct {
 
 // Middleware returns middleware for openai-go v3's option.WithMiddleware. The first call registers it with the core SDK,
 // which lists it in diagnostics as {"lib":"openai","source":"flashcat","status":"installed"}.
-// It can be created before flashcatotel.Init because it reads the provider and content capture switch on each request.
+// It can be created before flashcatgenai.Init because it reads the provider and content capture switch on each request.
 func Middleware(opts ...Option) option.Middleware {
 	m := &middleware{}
 	for _, o := range opts {
@@ -193,7 +193,7 @@ func Middleware(opts ...Option) option.Middleware {
 			o(&m.cfg)
 		}
 	}
-	flashcatotel.RegisterInstrumentation("openai", targetModule)
+	flashcatgenai.RegisterInstrumentation("openai", targetModule)
 	mp := m.cfg.meterProvider
 	if mp == nil {
 		mp = otel.GetMeterProvider() // The global MeterProvider hands instruments created before Init to the provider installed later.
@@ -218,7 +218,7 @@ func (m *middleware) capture() bool {
 	if m.cfg.captureContent != nil {
 		return *m.cfg.captureContent
 	}
-	return flashcatotel.ContentCaptureEnabled()
+	return flashcatgenai.ContentCaptureEnabled()
 }
 
 // requestInfo holds data parsed from the request body.

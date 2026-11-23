@@ -1,6 +1,6 @@
-# @flashcat/otel
+# @flashcat/genai-otel
 
-The Node.js version of the Flashcat OTel SDK provides observability for AI agents with a one-line setup on top of OpenTelemetry GenAI instrumentation. It handles initialization, export to Flashcat, business semantics (agents, tools, workflows, and sessions), masking and truncation, and diagnostics. Model call spans come from upstream instrumentation or instrumentation built into the model SDK.
+The Node.js version of the Flashcat GenAI OTel SDK provides observability for AI agents with a one-line setup on top of OpenTelemetry GenAI instrumentation. It handles initialization, export to Flashcat, business semantics (agents, tools, workflows, and sessions), masking and truncation, and diagnostics. Model call spans come from upstream instrumentation or instrumentation built into the model SDK.
 
 Requires **Node.js ≥ 22.15.0** to meet the requirements of the current generation of OTel JS. Support is limited to server-side Node.js. Browser and Edge runtimes are unsupported.
 
@@ -9,7 +9,7 @@ Requires **Node.js ≥ 22.15.0** to meet the requirements of the current generat
 The package has yet to be published to npm. Install it from this repository's GitHub Releases (see [RELEASING.md](../RELEASING.md#install-from-github-releases)).
 
 ```bash
-npm install https://github.com/flashcatcloud/flashcat-otel/releases/download/v0.1.0/flashcat-otel-0.1.0.tgz
+npm install https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-0.1.0.tgz
 ```
 
 The package includes instrumentation for openai (4.19 through 6.x), the Anthropic SDK, and the OpenAI Agents SDK. For openai 7, LangChain, the Vercel AI SDK, and Bedrock, install the corresponding packages listed under [Instrumentation sources](#instrumentation-sources).
@@ -21,7 +21,7 @@ The package includes instrumentation for openai (4.19 through 6.x), the Anthropi
 export OTEL_SERVICE_NAME=kefu-agent
 export FLASHCAT_ENDPOINT=https://ingest.example.com/v1/traces   # full URL including /v1/traces
 export FLASHCAT_API_KEY=keyID:secret                              # the SDK encodes this for Basic authentication
-node --import @flashcat/otel/register app.js
+node --import @flashcat/genai-otel/register app.js
 ```
 
 Use the same command for ESM and CommonJS applications. `--import` registers the ESM loader hook before calling `init()`, so it can also patch model SDKs loaded with `import` in ESM applications.
@@ -34,7 +34,7 @@ For CommonJS, put the initialization at the top of the entry file.
 
 <!-- snippet:init-cjs -->
 ```js
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 otel.init({ serviceName: 'kefu-agent', captureContent: false });   // Content capture is off by default. Use 'span' to enable it.
 
 const { OpenAI } = require('openai');   // Load the model SDK after init.
@@ -46,9 +46,9 @@ In ESM, `import` declarations are hoisted to the top of the file. Put the initia
 ```js
 // instrumentation.mjs
 import { register } from 'node:module';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 
-register('@opentelemetry/instrumentation/hook.mjs', import.meta.resolve('@flashcat/otel'));
+register('@opentelemetry/instrumentation/hook.mjs', import.meta.resolve('@flashcat/genai-otel'));
 otel.init({ serviceName: 'kefu-agent', captureContent: false });
 ```
 
@@ -57,7 +57,7 @@ otel.init({ serviceName: 'kefu-agent', captureContent: false });
 node --import ./instrumentation.mjs app.mjs
 ```
 
-openai 7 and LangChain use OpenInference instrumentation. In ESM applications, patching these libraries requires the zero-code entry point `--import @flashcat/otel/register` (see [Known limitations](#known-limitations)).
+openai 7 and LangChain use OpenInference instrumentation. In ESM applications, patching these libraries requires the zero-code entry point `--import @flashcat/genai-otel/register` (see [Known limitations](#known-limitations)).
 
 The precedence order is explicit arguments > `FLASHCAT_*` > `OTEL_*` > defaults. `init()` is synchronous. A second call returns the diagnostics from the first call without performing initialization again. Only invalid explicit arguments (such as `captureContent: true`) cause `ConfigError`. Other issues are recorded in the diagnostics and the application continues running normally.
 
@@ -80,7 +80,7 @@ Set `FLASHCAT_DISABLED=true` or `OTEL_SDK_DISABLED=true` to disable the SDK. In 
 
 <!-- snippet:semantic -->
 ```js
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 
 const searchKb = otel.tool('search_kb', async (query) => {
   return ['Return policy'];   // Existing logic
@@ -144,9 +144,9 @@ OTel JS does not support adding processors to an existing TracerProvider. If the
 // instrumentation.mjs
 import { register } from 'node:module';
 import { NodeSDK } from '@opentelemetry/sdk-node';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 
-register('@opentelemetry/instrumentation/hook.mjs', import.meta.resolve('@flashcat/otel'));   // Required for ESM applications.
+register('@opentelemetry/instrumentation/hook.mjs', import.meta.resolve('@flashcat/genai-otel'));   // Required for ESM applications.
 
 const sdk = new NodeSDK({
   serviceName: 'kefu-agent',
@@ -201,8 +201,8 @@ For openai 4.19 through 6.x, the upstream instrumentation omits cached token cou
 
 Runtime require and import hooks can intercept only model SDKs loaded from `node_modules`. When a bundler includes a library such as `openai` in the server bundle, instrumentation silently fails. The diagnostics initially show `installed`. On the first model request, the status changes to `not_patched` and the SDK records the issue in `problems`. Exclude the SDK and model libraries from the bundle, then rebuild.
 
-- For Next.js 13–14, add `experimental: { serverComponentsExternalPackages: ['@flashcat/otel', 'openai'] }` to `next.config.js`.
-- For Next.js 15 and later, set `serverExternalPackages: ['@flashcat/otel', 'openai']` at the top level.
+- For Next.js 13–14, add `experimental: { serverComponentsExternalPackages: ['@flashcat/genai-otel', 'openai'] }` to `next.config.js`.
+- For Next.js 15 and later, set `serverExternalPackages: ['@flashcat/genai-otel', 'openai']` at the top level.
 - For webpack, exclude these packages using `externals`. For esbuild, use `--external:openai` (or `packages: 'external'`).
 
 ## Content capture and masking
@@ -222,7 +222,7 @@ Runtime require and import hooks can intercept only model SDKs loaded from `node
 
 ```json
 {
-  "sdk": { "name": "flashcat-otel", "version": "0.1.0", "language": "nodejs" },
+  "sdk": { "name": "flashcat-genai-otel", "version": "0.1.0", "language": "nodejs" },
   "enabled": true,
   "service_name": "kefu-agent",
   "environment": "prod",

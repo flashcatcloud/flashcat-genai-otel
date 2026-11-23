@@ -64,7 +64,7 @@ function check(result, run) {
 test('MCP client with CommonJS code initialization', async () => {
   const run = 'mcp-cjs';
   const code = `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
 (async () => {
 ${APP(`const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
@@ -77,15 +77,15 @@ const { z } = require('zod');`)}
   check(result, run);
 });
 
-test('MCP client with ESM and node --import @flashcat/otel/register', async () => {
+test('MCP client with ESM and node --import @flashcat/genai-otel/register', async () => {
   const run = 'mcp-esm';
-  const code = APP(`import * as otel from '@flashcat/otel';
+  const code = APP(`import * as otel from '@flashcat/genai-otel';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { z } from 'zod';`);
   const { result } = await runScript('mcp', code, {
-    nodeArgs: ['--import', '@flashcat/otel/register'],
+    nodeArgs: ['--import', '@flashcat/genai-otel/register'],
     env: env({ OTEL_SERVICE_NAME: 'x', OTEL_METRICS_EXPORTER: 'none', FLASHCAT_CAPTURE_CONTENT: 'span', OTEL_RESOURCE_ATTRIBUTES: `test.run=${run}` }),
   });
   check(result, run);
@@ -93,7 +93,7 @@ import { z } from 'zod';`);
 
 test('MCP client with ESM code initialization after a static import', async () => {
   const run = 'mcp-esm-init';
-  const code = `import * as otel from '@flashcat/otel';
+  const code = `import * as otel from '@flashcat/genai-otel';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';

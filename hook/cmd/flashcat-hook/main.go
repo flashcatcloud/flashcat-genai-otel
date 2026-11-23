@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/otlp"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/otlp"
 )
 
 // version is set by scripts/release.sh via -ldflags.

@@ -1,7 +1,7 @@
 # flashcat-instrumentation-dashscope
 
 OpenTelemetry GenAI instrumentation for the native DashScope SDK from Alibaba Cloud Bailian, built on the community `opentelemetry-util-genai` package.
-Typically installed with `pip install 'flashcat-otel[dashscope]'` and loaded automatically by `flashcat.otel.init()`.
+Typically installed with `pip install 'flashcat-genai-otel[dashscope]'` and loaded automatically by `flashcat.genai.init()`.
 
 ```python
 from flashcat.instrumentation.dashscope import DashScopeInstrumentor

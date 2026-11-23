@@ -8,7 +8,7 @@ test('Natural script exit flushes automatically in beforeExit without an explici
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('auto-flushed', () => {});
 `;
@@ -25,7 +25,7 @@ test('SIGTERM flushes and preserves the default exit behavior without a user lis
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('before-sigterm', () => {});
 setInterval(() => {}, 1000);   // Keep the process running.
@@ -48,7 +48,7 @@ test('With a user SIGTERM listener, the SDK flushes and lets the listener contro
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('user-handler', () => {});
 const t = setInterval(() => {}, 1000);
@@ -75,7 +75,7 @@ console.log('READY');
 
 // Generate traces and metrics so both pipelines hit the unreachable endpoint and share the same deadline.
 const EXIT_APP = (tail) => `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { metrics } from '@opentelemetry/api';
 otel.init({ serviceName: 'x' });
 metrics.getMeter('t').createCounter('flashcat_test_counter').add(1);
@@ -141,7 +141,7 @@ test('Against a blackhole, flush(500) aborts the request at the deadline and ret
   const bh = await startBlackhole();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('a', () => {});
 const t0 = performance.now();
@@ -186,7 +186,7 @@ test('SIGTERM against a blackhole during Kubernetes graceful termination honors 
   const bh = await startBlackhole();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x' });
 otel.trace('before-sigterm', () => {});
 setInterval(() => {}, 1000);   // Keep the process running.
@@ -212,7 +212,7 @@ test('The shutdown deadline aborts preexisting requests, counts their spans in d
   const bh = await startBlackhole();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('a', () => {});
 void otel.flush(10000);                       // This request is already in flight against the blackhole with a 10-second export timeout.

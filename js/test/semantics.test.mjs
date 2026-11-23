@@ -23,7 +23,7 @@ function spansOf(traceIdSet) {
 test('Four span types have the expected names, kinds, and start attributes and omit content when capture is off', async () => {
   const run = 'sem-names';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, resourceAttributes: { 'test.run': '${run}' } });
 const a = otel.agent('kefu', (q) => 'a:' + q, { description: '客服' });
 const t = otel.tool('search_kb', (q) => ['doc'], { description: '查知识库' });
@@ -39,7 +39,7 @@ console.log('RESULT:{}');
   assert.deepEqual(Object.keys(by).sort(), ['batch_job', 'execute_tool search_kb', 'invoke_agent kefu', 'invoke_workflow ticket_flow']);
   for (const s of spans) {
     assert.equal(s.kind, 1, 'INTERNAL');
-    assert.equal(s.scope, 'flashcat.otel');
+    assert.equal(s.scope, 'flashcat.genai');
   }
   assert.deepEqual(by['invoke_agent kefu'].attrs, {
     'gen_ai.operation.name': 'invoke_agent',
@@ -65,7 +65,7 @@ console.log('RESULT:{}');
 test('Wrappers preserve this, arguments, return values, name, length, and exceptions across sync calls, promises, async iterators, and generators', async () => {
   const run = 'sem-shapes';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
 class OrderError extends Error {}
 const res = {};
@@ -157,7 +157,7 @@ console.log('RESULT:' + JSON.stringify(res));
 test('Functions wrapped before init work with no-op spans and start emitting spans after init', async () => {
   const run = 'sem-preinit';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const f = otel.agent('early', (x) => x + 1);
 const r1 = f(1);
 otel.init({ serviceName: 'x', metrics: false, resourceAttributes: { 'test.run': '${run}' } });
@@ -173,7 +173,7 @@ console.log('RESULT:' + JSON.stringify([r1, r2]));
 test('Serialization caps content at 32 KiB with …[truncated] and falls back to String() on failure', async () => {
   const run = 'sem-serialize';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
 otel.tool('big', (s) => 1)('x'.repeat(40000));
 const cyc = {}; cyc.self = cyc;
@@ -194,7 +194,7 @@ console.log('RESULT:{}');
 test('Sessions scope three attribute types, preserve existing conversation IDs, omit baggage by default, support parent inheritance, and count orphan inference spans', async () => {
   const run = 'sem-session';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { trace, propagation, context } from '@opentelemetry/api';
 otel.init({ serviceName: 'x', metrics: false, resourceAttributes: { 'test.run': '${run}' } });
 const tracer = trace.getTracer('third-party');
@@ -244,7 +244,7 @@ test('A tracer failure runs the original function and preserves its return value
   const code = `
 import { trace } from '@opentelemetry/api';
 trace.setGlobalTracerProvider({ getTracer() { throw new Error('broken tracer'); } });
-const otel = await import('@flashcat/otel');
+const otel = await import('@flashcat/genai-otel');
 const d = otel.init({ serviceName: 'x', exporter: 'none', metrics: false });
 const res = {};
 res.sync = otel.agent('a', (x) => x + 1)(1);

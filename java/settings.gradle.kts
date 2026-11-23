@@ -1,4 +1,4 @@
-rootProject.name = "flashcat-otel-java"
+rootProject.name = "flashcat-genai-otel-java"
 
 dependencyResolutionManagement {
     repositories {
@@ -6,7 +6,7 @@ dependencyResolutionManagement {
     }
 }
 
-include("flashcat-otel")
-include("flashcat-otel-agent-extension")
+include("flashcat-genai-otel")
+include("flashcat-genai-otel-agent-extension")
 // Used only for end-to-end tests with the Java agent and Spring Boot Starter. This module is excluded from publishing.
 include("integration-tests")

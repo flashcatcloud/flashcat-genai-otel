@@ -2,7 +2,7 @@ import java.time.Duration
 
 // End-to-end tests. This module is excluded from publishing.
 //  1. The OpenTelemetry Java Agent, Flashcat extension jar, and a small Java program send data to a mock ingest endpoint.
-//  2. A Spring Boot app with OpenTelemetry Spring Boot Starter and flashcat-otel runs with two classpaths.
+//  2. A Spring Boot app with OpenTelemetry Spring Boot Starter and flashcat-genai-otel runs with two classpaths.
 // The apps run in subprocesses. The tests check data received by the mock endpoint and diagnostics printed by the apps.
 plugins {
     java
@@ -34,13 +34,13 @@ val springAppWithActuator = configurations.create("springAppWithActuator") {
 dependencies {
     agentJar(libs.otel.javaagent)
 
-    "agentAppImplementation"(project(":flashcat-otel"))
+    "agentAppImplementation"(project(":flashcat-genai-otel"))
     "agentAppImplementation"(libs.openai.java)
 
-    agentAppLatestOpenai(project(":flashcat-otel"))
+    agentAppLatestOpenai(project(":flashcat-genai-otel"))
     agentAppLatestOpenai(libs.openai.java.latest)
 
-    oldOtelApi(project(":flashcat-otel"))
+    oldOtelApi(project(":flashcat-genai-otel"))
     oldOtelApi("io.opentelemetry:opentelemetry-api:1.50.0")
     oldOtelApi("io.opentelemetry:opentelemetry-context:1.50.0")
 
@@ -48,7 +48,7 @@ dependencies {
     "springAppImplementation"(platform(libs.otel.instrumentation.bom))
     "springAppImplementation"(libs.spring.boot.starter)
     "springAppImplementation"(libs.otel.spring.boot.starter)
-    "springAppImplementation"(project(":flashcat-otel"))
+    "springAppImplementation"(project(":flashcat-genai-otel"))
 
     springAppWithActuator(platform(libs.spring.boot.bom))
     springAppWithActuator(platform(libs.otel.instrumentation.bom))
@@ -58,15 +58,15 @@ dependencies {
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.launcher)
-    testImplementation(testFixtures(project(":flashcat-otel")))
+    testImplementation(testFixtures(project(":flashcat-genai-otel")))
 }
 
 tasks.named<JavaCompile>("compileAgentAppJava") { options.release.set(8) }
 tasks.named<JavaCompile>("compileSpringAppJava") { options.release.set(17) }
 tasks.named<JavaCompile>("compileTestJava") { options.release.set(17) }
 
-// :flashcat-otel-agent-extension:extensionJar builds the extension jar.
-val extensionJarTask = project(":flashcat-otel-agent-extension").tasks.named<Jar>("extensionJar")
+// :flashcat-genai-otel-agent-extension:extensionJar builds the extension jar.
+val extensionJarTask = project(":flashcat-genai-otel-agent-extension").tasks.named<Jar>("extensionJar")
 
 tasks.test {
     dependsOn(extensionJarTask, agentAppSourceSet.output, springAppSourceSet.output)

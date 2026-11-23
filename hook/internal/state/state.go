@@ -14,8 +14,8 @@ import (
 
 	"github.com/gofrs/flock"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // DefaultLockTimeout is how long Acquire waits for another hook process

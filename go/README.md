@@ -1,24 +1,24 @@
-# flashcat-otel (Go)
+# flashcat-genai-otel (Go)
 
-The Go version of the Flashcat OTel SDK provides observability for AI agents. It supports one-line initialization, export to Flashcat, business semantics (agents, tools, workflows, and sessions), masking and truncation, and diagnostics.
+The Go version of the Flashcat GenAI OTel SDK provides observability for AI agents. It supports one-line initialization, export to Flashcat, business semantics (agents, tools, workflows, and sessions), masking and truncation, and diagnostics.
 Model call spans come from instrumentation submodules (`openai-go` middleware and Eino callbacks) or from instrumentation built into the model SDK (Anthropic Go SDK).
 
 Requires Go ≥ 1.25.0. Both the core and instrumentation modules depend on OTel Go v1.46.0, whose `go.mod` requires `go 1.25.0`. Projects using Go 1.24 must upgrade their toolchain even if they use an older version of Eino.
 
 | Module | Purpose |
 |---|---|
-| `github.com/flashcatcloud/flashcat-otel/go` | Core module with `flashcatotel.Init`, the semantic API, sessions, masking, and diagnostics |
-| `github.com/flashcatcloud/flashcat-otel/go/instrumentation/openai` | Middleware for `github.com/openai/openai-go/v3` (also works with OpenAI-compatible APIs such as DeepSeek and Qwen) |
-| `github.com/flashcatcloud/flashcat-otel/go/instrumentation/eino` | Callbacks for CloudWeGo Eino |
-| `github.com/flashcatcloud/flashcat-otel/go/instrumentation/mcp` | Server middleware for the MCP Go SDK (`github.com/modelcontextprotocol/go-sdk`) |
+| `github.com/flashcatcloud/flashcat-genai-otel/go` | Core module with `flashcatgenai.Init`, the semantic API, sessions, masking, and diagnostics |
+| `github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai` | Middleware for `github.com/openai/openai-go/v3` (also works with OpenAI-compatible APIs such as DeepSeek and Qwen) |
+| `github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino` | Callbacks for CloudWeGo Eino |
+| `github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp` | Server middleware for the MCP Go SDK (`github.com/modelcontextprotocol/go-sdk`) |
 
 ## Installation
 
 ```bash
-go get github.com/flashcatcloud/flashcat-otel/go@v0.1.0
-go get github.com/flashcatcloud/flashcat-otel/go/instrumentation/openai@v0.1.0   # if you use openai-go
-go get github.com/flashcatcloud/flashcat-otel/go/instrumentation/eino@v0.1.0     # if you use Eino
-go get github.com/flashcatcloud/flashcat-otel/go/instrumentation/mcp@v0.1.0      # if you use the MCP Go SDK
+go get github.com/flashcatcloud/flashcat-genai-otel/go@v0.1.0
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai@v0.1.0   # if you use openai-go
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino@v0.1.0     # if you use Eino
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.1.0      # if you use the MCP Go SDK
 ```
 
 ```bash
@@ -36,15 +36,15 @@ import (
 	"context"
 	"log"
 
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 )
 
 func main() {
 	ctx := context.Background()
 	// Initialize before creating model clients.
-	sdk, err := flashcatotel.Init(ctx,
-		flashcatotel.WithServiceName("kefu-agent"),
-		flashcatotel.WithCaptureContent(flashcatotel.ContentOff), // Content capture is off by default. Use ContentSpan to enable it.
+	sdk, err := flashcatgenai.Init(ctx,
+		flashcatgenai.WithServiceName("kefu-agent"),
+		flashcatgenai.WithCaptureContent(flashcatgenai.ContentOff), // Content capture is off by default. Use ContentSpan to enable it.
 	)
 	if err != nil {
 		log.Fatal(err) // Only invalid explicit options, such as WithCaptureContent("true"), reach this branch.
@@ -82,7 +82,7 @@ import (
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
 
-	flashcatopenai "github.com/flashcatcloud/flashcat-otel/go/instrumentation/openai"
+	flashcatopenai "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai"
 )
 
 client := openai.NewClient(option.WithMiddleware(flashcatopenai.Middleware()))
@@ -117,7 +117,7 @@ _, err := qwen.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 
 ## Anthropic Go SDK (built-in instrumentation, no additional installation)
 
-`github.com/anthropics/anthropic-sdk-go/v2` (verified with v2.9.0) creates OTel spans and defaults to the global TracerProvider set by `flashcatotel.Init`.
+`github.com/anthropics/anthropic-sdk-go/v2` (verified with v2.9.0) creates OTel spans and defaults to the global TracerProvider set by `flashcatgenai.Init`.
 You can use that provider without setting `option.WithTracerProvider` or installing any instrumentation.
 
 ```go
@@ -148,7 +148,7 @@ import (
 	"github.com/cloudwego/eino/callbacks"
 	"github.com/cloudwego/eino/compose"
 
-	flashcateino "github.com/flashcatcloud/flashcat-otel/go/instrumentation/eino"
+	flashcateino "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino"
 )
 
 callbacks.AppendGlobalHandlers(flashcateino.NewHandler()) // Call once during program initialization. Concurrent calls are unsafe.
@@ -162,11 +162,11 @@ If Eino's model component uses openai-go with the middleware above, one call pro
 ## MCP server (github.com/modelcontextprotocol/go-sdk)
 
 ```bash
-go get github.com/flashcatcloud/flashcat-otel/go/instrumentation/mcp@v0.1.0
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.1.0
 ```
 
 ```go
-import flashcatmcp "github.com/flashcatcloud/flashcat-otel/go/instrumentation/mcp"
+import flashcatmcp "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp"
 
 server := mcp.NewServer(&mcp.Implementation{Name: "orders", Version: "1.0.0"}, nil)
 server.AddReceivingMiddleware(flashcatmcp.Middleware())
@@ -175,17 +175,17 @@ server.AddReceivingMiddleware(flashcatmcp.Middleware())
 - Each `tools/call` produces a `tools/call {tool name}` SERVER span with `mcp.method.name`, `gen_ai.operation.name=execute_tool`, and `gen_ai.tool.name`, following the OTel MCP semantic conventions. Other methods, such as initialize and tools/list, produce no spans.
 - When the content capture switch is on, the middleware records `gen_ai.tool.call.arguments` / `gen_ai.tool.call.result`. When the tool returns `IsError`, it records `error.type=tool_error` and sets the span status to ERROR. For JSON-RPC errors, it records the error code.
 - When the client includes a W3C traceparent in the request's `_meta`, the client span becomes the parent of the server span. Flashcat's Python and Node.js client instrumentation and mcp Python 2.x include it.
-- You can create the middleware before calling `flashcatotel.Init` and override the defaults with `WithTracerProvider` and `WithCaptureContent`. The diagnostics list `{"lib":"mcp","source":"flashcat"}` in `instrumentations`.
+- You can create the middleware before calling `flashcatgenai.Init` and override the defaults with `WithTracerProvider` and `WithCaptureContent`. The diagnostics list `{"lib":"mcp","source":"flashcat"}` in `instrumentations`.
 - Supports go-sdk v1.8. Support for mark3labs/mcp-go is currently unavailable.
 
 ## Semantic API for business logic
 
 ```go
-err := flashcatotel.Agent(ctx, "kefu", func(ctx context.Context) error {
-	return flashcatotel.Tool(ctx, "search_kb", func(ctx context.Context) error {
+err := flashcatgenai.Agent(ctx, "kefu", func(ctx context.Context) error {
+	return flashcatgenai.Tool(ctx, "search_kb", func(ctx context.Context) error {
 		/* Existing business logic */
 		return nil
-	}, flashcatotel.WithDescription("Search the knowledge base"))
+	}, flashcatgenai.WithDescription("Search the knowledge base"))
 })
 ```
 
@@ -194,7 +194,7 @@ err := flashcatotel.Agent(ctx, "kefu", func(ctx context.Context) error {
 - Use explicit start and end calls for streaming or spans that cross function boundaries.
 
 ```go
-ctx, span := flashcatotel.StartAgent(ctx, "kefu")
+ctx, span := flashcatgenai.StartAgent(ctx, "kefu")
 span.SetInput(question) // Records input only when the content capture switch is on.
 go func() {
 	var answer strings.Builder
@@ -212,24 +212,24 @@ Use `Agent` / `Workflow` / `Trace` at the entry point to give model call spans a
 Use `LLM` / `Embedding` / `Retrieval` to mark model calls and retrievals made through custom gateways, private SDKs, or direct HTTP requests. Then use `Annotate` to add usage, the response model, and messages.
 
 ```go
-err := flashcatotel.LLM(ctx, "qwen-max", func(ctx context.Context) error {
+err := flashcatgenai.LLM(ctx, "qwen-max", func(ctx context.Context) error {
 	resp, err := gateway.Chat(ctx, msgs)
 	if err != nil {
 		return err
 	}
-	flashcatotel.Annotate(ctx, flashcatotel.Annotation{
-		Input:         []flashcatotel.Message{{Role: "user", Content: question}},
+	flashcatgenai.Annotate(ctx, flashcatgenai.Annotation{
+		Input:         []flashcatgenai.Message{{Role: "user", Content: question}},
 		Output:        resp.Text,
 		Model:         resp.Model,
-		Usage:         &flashcatotel.Usage{InputTokens: resp.Usage.In, OutputTokens: resp.Usage.Out},
+		Usage:         &flashcatgenai.Usage{InputTokens: resp.Usage.In, OutputTokens: resp.Usage.Out},
 		FinishReasons: []string{"stop"},
 	})
 	return nil
-}, flashcatotel.WithProvider("dashscope"))
+}, flashcatgenai.WithProvider("dashscope"))
 
-_ = flashcatotel.Retrieval(ctx, "kb-orders", func(ctx context.Context) error {
+_ = flashcatgenai.Retrieval(ctx, "kb-orders", func(ctx context.Context) error {
 	docs := search(query)
-	flashcatotel.Annotate(ctx, flashcatotel.Annotation{Input: query, Output: docs}) // Array of documents.
+	flashcatgenai.Annotate(ctx, flashcatgenai.Annotation{Input: query, Output: docs}) // Array of documents.
 	return nil
 })
 ```
@@ -241,12 +241,12 @@ _ = flashcatotel.Retrieval(ctx, "kb-orders", func(ctx context.Context) error {
 ## Sessions
 
 ```go
-ctx = flashcatotel.WithSession(ctx, flashcatotel.Session{
+ctx = flashcatgenai.WithSession(ctx, flashcatgenai.Session{
 	ConversationID: "c-123",
 	UserID:         "u-9",
 	Tags:           map[string]string{"tenant": "a"},
 })
-_ = flashcatotel.Agent(ctx, "kefu", answer)
+_ = flashcatgenai.Agent(ctx, "kefu", answer)
 ```
 
 **Every** span started in this context or a context derived from it carries `gen_ai.conversation.id` (any value already on the span takes precedence), `user.id`, and `flashcat.tag.<k>`.
@@ -260,30 +260,30 @@ These rules apply only to Flashcat's own export pipeline. It replaces values wit
 To add custom rules, use the following configuration.
 
 ```go
-flashcatotel.WithMasking(flashcatotel.MaskingConfig{
-	ExtraPatterns: []flashcatotel.MaskingPattern{{Name: "order", Pattern: `ORD-\d+`, Replacement: "[REDACTED:order]"}},
+flashcatgenai.WithMasking(flashcatgenai.MaskingConfig{
+	ExtraPatterns: []flashcatgenai.MaskingPattern{{Name: "order", Pattern: `ORD-\d+`, Replacement: "[REDACTED:order]"}},
 })
 ```
 
 ## Using an existing OTel setup
 
-- If you already registered an SDK provider using `otel.SetTracerProvider`, call `flashcatotel.Init` as usual. The SDK adds the Flashcat export pipeline to your provider (situation B).
+- If you already registered an SDK provider using `otel.SetTracerProvider`, call `flashcatgenai.Init` as usual. The SDK adds the Flashcat export pipeline to your provider (situation B).
 - To manage the provider yourself, add the Flashcat processor to it before calling `Init`. The SDK recognizes this as situation C and skips adding a duplicate pipeline.
 
 ```go
 tp := sdktrace.NewTracerProvider(
 	sdktrace.WithResource(myResource),
-	sdktrace.WithSpanProcessor(flashcatotel.NewSpanProcessor()), // Session processing + masking + batching + OTLP export
+	sdktrace.WithSpanProcessor(flashcatgenai.NewSpanProcessor()), // Session processing + masking + batching + OTLP export
 )
 otel.SetTracerProvider(tp)
-sdk, _ := flashcatotel.Init(ctx, flashcatotel.WithServiceName("kefu-agent"))
+sdk, _ := flashcatgenai.Init(ctx, flashcatgenai.WithServiceName("kefu-agent"))
 ```
 
 `NewSpanProcessor` reads configuration using the same rules as `Init`. If the endpoint or credentials are missing, it only processes sessions and logs one warning line.
 
 ## Diagnostics
 
-`sdk.Diagnostics()` / `flashcatotel.GetDiagnostics()` return a struct with JSON tags. After `json.Marshal`, the fields match the Python, Node.js, and Java SDKs.
+`sdk.Diagnostics()` / `flashcatgenai.GetDiagnostics()` return a struct with JSON tags. After `json.Marshal`, the fields match the Python, Node.js, and Java SDKs.
 `sdk.language` is `go`. The `provider` field reports situation A, B, or C. The `instrumentations` field lists instrumentation you have configured (the Go SDK does not scan directories, so unconfigured libraries are absent). The `export` field reports export counts (`ok`, `http_401`, `http_5xx`, `network`, `last_error`). The `semantics` field reports counts for orphan inference spans, masking, and truncation.
 During `Init`, the SDK logs a one-line INFO summary through `log/slog`. Use `WithDebug(true)` to log the full diagnostics.
 

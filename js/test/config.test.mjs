@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { runScript, startCollector } from './helpers.mjs';
 
 const PRINT_INIT = (opts = '') => `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const d = otel.init(${opts});
 console.log('RESULT:' + JSON.stringify(d));
 `;
@@ -51,7 +51,7 @@ test('FLASHCAT_API_KEY takes precedence over Authorization from OTEL_EXPORTER_OT
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('job', () => 1);
 await otel.flush();
@@ -105,7 +105,7 @@ test('Invalid endpoints, missing service names, and malformed credentials disabl
 
 test('Invalid explicit capture settings throw ConfigError, event modes report problems, and invalid environment values do not throw', async () => {
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const out = {};
 for (const v of [true, 'yes', 1]) {
   try { otel.init({ serviceName: 'x', captureContent: v }); out[String(v)] = 'no-throw'; }
@@ -148,7 +148,7 @@ console.log('RESULT:' + JSON.stringify(out));
 
 test('The content capture switch configures each source and preserves user-set environment variables', async () => {
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const d = otel.init({ serviceName: 'x', metrics: false, captureContent: 'span' });
 const e = process.env;
 console.log('RESULT:' + JSON.stringify({ content: d.content, upstream: e.OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT,
@@ -165,7 +165,7 @@ console.log('RESULT:' + JSON.stringify({ content: d.content, upstream: e.OTEL_IN
 
 test('A second init returns the original diagnostics without side effects', async () => {
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { trace } from '@opentelemetry/api';
 const d1 = otel.init({ serviceName: 'first', metrics: false });
 const p1 = trace.getTracerProvider().getDelegate();
@@ -183,7 +183,7 @@ console.log('RESULT:' + JSON.stringify({ s1: d1.service_name, s2: d2.service_nam
 test('FLASHCAT_DISABLED and OTEL_SDK_DISABLED make init return only diagnostics', async () => {
   for (const k of ['FLASHCAT_DISABLED', 'OTEL_SDK_DISABLED']) {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { trace } from '@opentelemetry/api';
 const d = otel.init({ serviceName: 'x' });
 const name = trace.getTracerProvider().getDelegate().constructor.name;
@@ -202,7 +202,7 @@ console.log('RESULT:' + JSON.stringify({ d, name, env: process.env.OTEL_INSTRUME
 
 test('Diagnostics field names match contract §8', async () => {
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const before = otel.diagnostics();
 const d = otel.init({ serviceName: 'kefu-agent', metrics: false });
 console.log('RESULT:' + JSON.stringify({ before, d, again: otel.diagnostics() }));
@@ -214,7 +214,7 @@ console.log('RESULT:' + JSON.stringify({ before, d, again: otel.diagnostics() })
   const keys = ['sdk', 'enabled', 'service_name', 'environment', 'endpoint', 'problems', 'notes', 'provider', 'content', 'instrumentations', 'export', 'semantics'];
   for (const d of [result.d, result.again]) {
     assert.deepEqual(Object.keys(d).sort(), [...keys].sort());
-    assert.deepEqual(d.sdk, { name: 'flashcat-otel', version: '0.1.0', language: 'nodejs' });
+    assert.deepEqual(d.sdk, { name: 'flashcat-genai-otel', version: '0.1.0', language: 'nodejs' });
     assert.deepEqual(Object.keys(d.provider).sort(), ['exporter_mode', 'metrics', 'situation']);
     assert.deepEqual(Object.keys(d.semantics).sort(), ['masked_spans', 'nested_inference_spans', 'orphan_inference_spans', 'truncated_spans']);
     for (const k of ['ok', 'network', 'dropped_queue_full', 'last_error']) assert.ok(k in d.export, k);
@@ -231,9 +231,9 @@ console.log('RESULT:' + JSON.stringify({ before, d, again: otel.diagnostics() })
 test('FLASHCAT_SHUTDOWN_TIMEOUT accepts fractional seconds, defaults to 5 seconds on invalid input, and yields to shutdownTimeoutMs', async () => {
   // Read the deadline from the globalThis state shared by ESM and CJS because it is absent from diagnostics.
   const code = (opts) => `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const d = otel.init(${opts});
-console.log('RESULT:' + JSON.stringify({ problems: d.problems, ms: globalThis[Symbol.for('flashcat.otel.state')].shutdownTimeoutMs }));
+console.log('RESULT:' + JSON.stringify({ problems: d.problems, ms: globalThis[Symbol.for('flashcat.genai.state')].shutdownTimeoutMs }));
 `;
   const run = async (value, opts = `{ serviceName: 'x', metrics: false }`) =>
     (await runScript('bare', code(opts), { env: value === undefined ? {} : { FLASHCAT_SHUTDOWN_TIMEOUT: value } })).result;

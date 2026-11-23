@@ -9,7 +9,7 @@ If the implementation differs from this document, this document takes precedence
 ```
 hook/
   CONTRACT.md            This document (frozen)
-  go.mod                 module github.com/flashcatcloud/flashcat-otel/hook
+  go.mod                 module github.com/flashcatcloud/flashcat-genai-otel/hook
   cmd/flashcat-hook/     main dispatches subcommands
   internal/model/        Data structures shared by the parsers and core (frozen)
   internal/config/       Configuration file, environment variables, identity (Git email)
@@ -221,7 +221,7 @@ The parser follows events observed in Cursor 3.29.9 (see `internal/cursor/testda
 ## 6. Releasing
 
 - Use the tag `hook-vX.Y.Z`. The repository contains multiple languages, so releases do not use `releases/latest`.
-- `scripts/release.sh <version>` cross-compiles for `darwin/{amd64,arm64}`, `linux/{amd64,arm64}`, and `windows/{amd64,arm64}` (`CGO_ENABLED=0 -trimpath -ldflags "-s -w -X main.version=<version>"`). It names the artifacts `flashcat-hook_<os>_<arch>[.exe]`, generates `SHA256SUMS`, and generates `install.sh` / `install.ps1` from templates with the default URL `https://github.com/flashcatcloud/flashcat-otel/releases/download/hook-v<version>`. Output goes to `dist/hook-v<version>/`.
+- `scripts/release.sh <version>` cross-compiles for `darwin/{amd64,arm64}`, `linux/{amd64,arm64}`, and `windows/{amd64,arm64}` (`CGO_ENABLED=0 -trimpath -ldflags "-s -w -X main.version=<version>"`). It names the artifacts `flashcat-hook_<os>_<arch>[.exe]`, generates `SHA256SUMS`, and generates `install.sh` / `install.ps1` from templates with the default URL `https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/hook-v<version>`. Output goes to `dist/hook-v<version>/`.
 - `install.sh <tool> [install args...] [--base-url <base url>]` accepts an **unversioned** base URL in `--base-url` and appends `/hook-v<version>/`. It detects the platform with `uname -s/-m` (Darwin/Linux, x86_64/amd64/arm64/aarch64), downloads the binary and `SHA256SUMS`, and verifies the checksum (`shasum -a 256` or `sha256sum`). It places the binary in `~/.flashcat/bin/`, runs `chmod +x`, then runs `exec flashcat-hook install <tool> ...`. It uses only POSIX sh.
 - `install.ps1` follows the same logic and accepts `-Tool -Endpoint -Key -App [-Content] [-User] [-BaseUrl]`. The page calls it with `& ([scriptblock]::Create((irm '<url>/install.ps1'))) -Tool claude -Endpoint ...`. **Untested on a Windows machine.**
 - `.github/workflows/hook-release.yml` runs `release.sh` and uploads the release assets when a `hook-v*` tag is pushed.

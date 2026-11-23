@@ -7,7 +7,7 @@ import { state } from './state';
 
 function write(level: string, msg: string): void {
   try {
-    process.stderr.write(`[flashcat-otel] ${level} ${msg}\n`);
+    process.stderr.write(`[flashcat-genai-otel] ${level} ${msg}\n`);
   } catch {
     // Keep SDK logging failures from affecting the application.
   }

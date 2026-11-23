@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/state"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/state"
 )
 
 // Retry queue limits. Variables so tests can shrink them.

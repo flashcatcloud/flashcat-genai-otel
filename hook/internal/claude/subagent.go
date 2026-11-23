@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 const maxSubagentDepth = 4

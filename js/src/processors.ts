@@ -20,7 +20,7 @@ const TAG_PREFIX = 'flashcat.tag.';
 const INFERENCE_OPS = new Set(['chat', 'text_completion', 'generate_content', 'embeddings']);
 
 /** Track active spans created by the semantic API for annotate and nested inference detection. Upstream spans are excluded. */
-export const FRAME_KEY = createContextKey('flashcat-otel-semantic-frame');
+export const FRAME_KEY = createContextKey('flashcat-genai-otel-semantic-frame');
 export interface SemanticFrame {
   span: unknown;
   kind: string;
@@ -153,7 +153,7 @@ export class SessionProcessor implements SpanProcessor {
           const st = state();
           st.nested.inc();
           if (!st.pendingProblems.includes(NESTED_INFERENCE_PROBLEM)) st.pendingProblems.push(NESTED_INFERENCE_PROBLEM);
-          log.warnOnce('nested_inference', `flashcat-otel: ${NESTED_INFERENCE_PROBLEM}`);
+          log.warnOnce('nested_inference', `flashcat-genai-otel: ${NESTED_INFERENCE_PROBLEM}`);
         }
       }
     } catch {

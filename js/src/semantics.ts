@@ -19,7 +19,7 @@ import { CONV_KEY, FRAME_KEY, TAGS_KEY, USER_KEY, type SemanticFrame } from './p
 import { state } from './state';
 import { VERSION } from './version';
 
-export const SCOPE = 'flashcat.otel';
+export const SCOPE = 'flashcat.genai';
 const MAX_SERIALIZED = 32 * 1024; // Serialization limit for arguments and return values.
 const TRUNCATED = '…[truncated]';
 

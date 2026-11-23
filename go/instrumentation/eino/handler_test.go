@@ -17,7 +17,7 @@ import (
 	"github.com/cloudwego/eino/components/tool"
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -263,10 +263,10 @@ func TestNeeded(t *testing.T) {
 
 func TestSessionAndGlobalProvider(t *testing.T) {
 	rec := tracetest.NewSpanRecorder()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatotel.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatgenai.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
 	otel.SetTracerProvider(tp)
 	h := NewHandler(WithCaptureContent(false))
-	ctx := flashcatotel.WithSession(context.Background(), flashcatotel.Session{ConversationID: "c-e", UserID: "u-e"})
+	ctx := flashcatgenai.WithSession(context.Background(), flashcatgenai.Session{ConversationID: "c-e", UserID: "u-e"})
 	if _, err := chain(t, &fakeChatModel{}).Invoke(ctx, question, compose.WithCallbacks(h)); err != nil {
 		t.Fatal(err)
 	}
@@ -279,7 +279,7 @@ func TestSessionAndGlobalProvider(t *testing.T) {
 		t.Fatalf("AI roots: workflow=%v chat=%v", workflow, m)
 	}
 	found := false
-	for _, it := range flashcatotel.GetDiagnostics().Instrumentations {
+	for _, it := range flashcatgenai.GetDiagnostics().Instrumentations {
 		if it.Lib == "eino" && it.Status == "installed" && it.Source == "flashcat" {
 			found = true
 		}

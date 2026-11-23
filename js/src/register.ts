@@ -1,5 +1,5 @@
 /**
- * Zero-code entry point for ESM and CJS apps: `node --import @flashcat/otel/register app.js`. --import always loads this ESM build.
+ * Zero-code entry point for ESM and CJS apps: `node --import @flashcat/genai-otel/register app.js`. --import always loads this ESM build.
  *
  * 1. Register the ESM loader hook (`@opentelemetry/instrumentation/hook.mjs`, via import-in-the-middle)
  *       so it can patch model SDK imports. Use --import to run before application code.

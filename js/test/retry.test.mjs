@@ -131,7 +131,7 @@ test('On natural exit, backoff keeps the process alive through both retries so t
   const sink = await receiver({ failures: 2, reset: true });
   try {
     await runScript('bare', `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { metrics } from '@opentelemetry/api';
 otel.init({ serviceName: 'retry' });
 metrics.getMeter('retry').createCounter('retry_counter').add(7);
@@ -151,7 +151,7 @@ test('Explicit flush(3000) delivers traces and metrics after bounded retries', a
   const sink = await receiver({ failures: 2 });
   try {
     const { result } = await runScript('bare', `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { metrics } from '@opentelemetry/api';
 otel.init({ serviceName: 'retry' });
 metrics.getMeter('retry').createCounter('retry_counter').add(7);
@@ -240,7 +240,7 @@ for (const reset of [false, true]) {
       const sink = await receiver({ failures, reset });
       try {
         const { result } = await runScript('bare', `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { metrics } from '@opentelemetry/api';
 otel.init({ serviceName: 'retry' });
 metrics.getMeter('retry').createCounter('retry_counter').add(7);

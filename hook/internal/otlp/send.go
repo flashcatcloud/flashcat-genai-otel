@@ -16,7 +16,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // Delivery limits (CONTRACT §4).

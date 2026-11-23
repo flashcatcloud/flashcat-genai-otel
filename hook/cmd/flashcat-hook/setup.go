@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/install"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/state"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/install"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/state"
 )
 
 func validTool(t string) bool {

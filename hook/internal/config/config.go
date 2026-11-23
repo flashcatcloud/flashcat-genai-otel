@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // Environment variables.

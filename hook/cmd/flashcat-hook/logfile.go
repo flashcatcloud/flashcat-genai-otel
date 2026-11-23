@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
 )
 
 // maxLogBytes is when hook.log rotates to hook.log.1 (CONTRACT §2).

@@ -15,14 +15,14 @@ import (
 	"sync"
 	"testing"
 
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
 	coltracepb "go.opentelemetry.io/proto/otlp/collector/trace/v1"
 	"google.golang.org/protobuf/proto"
 )
 
-// Run flashcatotel.Init in a subprocess because the global provider is process-wide. The middleware's chat span
+// Run flashcatgenai.Init in a subprocess because the global provider is process-wide. The middleware's chat span
 // goes through the core SDK's session processing and masking and is exported via OTLP to a fake endpoint.
 
 const scenarioEnv = "FLASHCAT_OPENAI_TEST_SCENARIO"
@@ -41,15 +41,15 @@ func runE2EScenario() any {
 	ctx := context.Background()
 	// Create the middleware before Init. It reads the provider and content capture switch when a request arrives.
 	mw := Middleware()
-	sdk, err := flashcatotel.Init(ctx, flashcatotel.WithServiceName("kefu-agent"), flashcatotel.WithCaptureContent(flashcatotel.ContentSpan),
-		flashcatotel.WithMetrics(false))
+	sdk, err := flashcatgenai.Init(ctx, flashcatgenai.WithServiceName("kefu-agent"), flashcatgenai.WithCaptureContent(flashcatgenai.ContentSpan),
+		flashcatgenai.WithMetrics(false))
 	if err != nil {
 		panic(err)
 	}
 	client := openai.NewClient(option.WithBaseURL(os.Getenv("FAKE_OPENAI_URL")), option.WithAPIKey("sk-test"),
 		option.WithMaxRetries(0), option.WithMiddleware(mw))
-	sctx := flashcatotel.WithSession(ctx, flashcatotel.Session{ConversationID: "c-123", UserID: "u-9"})
-	err = flashcatotel.Agent(sctx, "kefu", func(ctx context.Context) error {
+	sctx := flashcatgenai.WithSession(ctx, flashcatgenai.Session{ConversationID: "c-123", UserID: "u-9"})
+	err = flashcatgenai.Agent(sctx, "kefu", func(ctx context.Context) error {
 		_, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 			Model:    "gpt-4o",
 			Messages: []openai.ChatCompletionMessageParamUnion{openai.UserMessage("手机13812345678，邮箱a@b.com")},

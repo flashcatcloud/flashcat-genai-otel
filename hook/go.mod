@@ -1,4 +1,4 @@
-module github.com/flashcatcloud/flashcat-otel/hook
+module github.com/flashcatcloud/flashcat-genai-otel/hook
 
 go 1.25.0
 

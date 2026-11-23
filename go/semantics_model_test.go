@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"context"
@@ -158,7 +158,7 @@ func TestNestedInferenceUnderManualLLMIsReported(t *testing.T) {
 	useRecorder(t, false)
 	before := global.nested.Load()
 	t.Cleanup(func() { global.nested.Store(before) })
-	tr := otel.Tracer("flashcat-otel/go/instrumentation/openai")
+	tr := otel.Tracer("flashcat-genai-otel/go/instrumentation/openai")
 
 	_ = LLM(context.Background(), "gpt-4o", func(ctx context.Context) error {
 		_, s := tr.Start(ctx, "chat gpt-4o", trace.WithAttributes(attribute.String("gen_ai.operation.name", "chat")))

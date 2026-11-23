@@ -1,7 +1,7 @@
 /**
- * Flashcat OTel SDK for Node.js, with one-line setup for AI agent observability.
+ * Flashcat GenAI OTel SDK for Node.js, with one-line setup for AI agent observability.
  *
- *     import * as otel from '@flashcat/otel';
+ *     import * as otel from '@flashcat/genai-otel';
  *     otel.init({ serviceName: 'kefu-agent' });
  *
  * See spec/contract.md for the cross-language contract.
@@ -28,7 +28,7 @@ export { VERSION as version };
 
 /** Return structure of init() and diagnostics(). Field names match across all four languages (contract §8). */
 export interface Diagnostics {
-  sdk: { name: 'flashcat-otel'; version: string; language: 'nodejs' };
+  sdk: { name: 'flashcat-genai-otel'; version: string; language: 'nodejs' };
   enabled: boolean;
   service_name: string | null;
   environment: string | null;
@@ -59,7 +59,7 @@ export type SpanProcessorOptions = Pick<InitOptions, 'endpoint' | 'apiKey' | 'ma
 
 function baseDiag(s: Settings | undefined): Diagnostics {
   return {
-    sdk: { name: 'flashcat-otel', version: VERSION, language: 'nodejs' },
+    sdk: { name: 'flashcat-genai-otel', version: VERSION, language: 'nodejs' },
     enabled: false,
     service_name: s?.serviceName ?? null,
     environment: s?.environment ?? null,

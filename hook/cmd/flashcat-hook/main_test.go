@@ -18,8 +18,8 @@ import (
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.opentelemetry.io/collector/pdata/ptrace/ptraceotlp"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/state"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/state"
 )
 
 // sandbox isolates every path the binary touches.

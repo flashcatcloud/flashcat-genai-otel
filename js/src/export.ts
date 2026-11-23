@@ -113,7 +113,7 @@ export class GzipHttpTransport implements IExporterTransport {
               'Content-Type': 'application/x-protobuf',
               'Content-Encoding': 'gzip',
               'Content-Length': String(body.length),
-              'User-Agent': `flashcat-otel-js/${VERSION}`,
+              'User-Agent': `flashcat-genai-otel-js/${VERSION}`,
             },
           },
           (res) => {

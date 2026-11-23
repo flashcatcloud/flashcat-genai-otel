@@ -21,7 +21,7 @@ test('HTTPS sends protobuf with gzip and Basic auth, and an untrusted certificat
   try {
     assert.ok(c.url.startsWith('https://'));
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('over-https', () => {});
 await otel.flush();

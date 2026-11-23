@@ -9,7 +9,7 @@ Send Claude Code, Codex, and Cursor sessions to Flashcat for AI agent observabil
 Copy the installation command from “Connect Claude Code / Codex / Cursor” on the onboarding page. It looks like this.
 
 ```bash
-curl -fsSL https://github.com/flashcatcloud/flashcat-otel/releases/download/hook-v<version>/install.sh | sh -s -- \
+curl -fsSL https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/hook-v<version>/install.sh | sh -s -- \
   claude --endpoint https://<gateway>/v1/traces --key <keyID:secret> --app coding-<name>
 ```
 
@@ -23,7 +23,7 @@ The script detects the OS and CPU (macOS / Linux, x86_64 / arm64), downloads the
 Windows (**untested on a Windows machine**)
 
 ```powershell
-& ([scriptblock]::Create((irm 'https://github.com/flashcatcloud/flashcat-otel/releases/download/hook-v<version>/install.ps1'))) `
+& ([scriptblock]::Create((irm 'https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/hook-v<version>/install.ps1'))) `
   -Tool claude -Endpoint https://<gateway>/v1/traces -Key <keyID:secret> -App coding-<name>
 ```
 

@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"context"
@@ -30,7 +30,7 @@ type exportCall struct {
 type exportBound struct{ ctx context.Context }
 
 // errExitDeadline marks exports abandoned at the shutdown or explicit Flush deadline.
-var errExitDeadline = errors.New("flashcat-otel: export abandoned at the shutdown deadline")
+var errExitDeadline = errors.New("flashcat-genai-otel: export abandoned at the shutdown deadline")
 
 // bounded reports whether a shutdown or explicit Flush deadline is active.
 func (l *exportLifecycle) bounded() bool {

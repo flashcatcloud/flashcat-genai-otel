@@ -9,9 +9,9 @@ resolution-markers = [
 
 [manifest]
 members = [
+    "flashcat-genai-otel",
     "flashcat-instrumentation-dashscope",
     "flashcat-instrumentation-mcp",
-    "flashcat-otel",
 ]
 requirements = [
     { name = "dashscope", specifier = ">=1.20,<3" },
@@ -711,59 +711,9 @@ wheels = [
 ]
 
 [[package]]
-name = "flashcat-instrumentation-dashscope"
+name = "flashcat-genai-otel"
 version = "0.1.0"
-source = { editable = "instrumentation/flashcat-instrumentation-dashscope" }
-dependencies = [
-    { name = "opentelemetry-api" },
-    { name = "opentelemetry-instrumentation" },
-    { name = "opentelemetry-util-genai" },
-    { name = "wrapt" },
-]
-
-[package.optional-dependencies]
-instruments = [
-    { name = "dashscope" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "dashscope", marker = "extra == 'instruments'", specifier = ">=1.20,<3" },
-    { name = "opentelemetry-api", specifier = "~=1.43" },
-    { name = "opentelemetry-instrumentation", specifier = ">=0.64b0,<1" },
-    { name = "opentelemetry-util-genai", specifier = "~=1.3b0" },
-    { name = "wrapt", specifier = ">=1.17,<3" },
-]
-
-[[package]]
-name = "flashcat-instrumentation-mcp"
-version = "0.1.0"
-source = { editable = "instrumentation/flashcat-instrumentation-mcp" }
-dependencies = [
-    { name = "opentelemetry-api" },
-    { name = "opentelemetry-instrumentation" },
-    { name = "opentelemetry-util-genai" },
-    { name = "wrapt" },
-]
-
-[package.optional-dependencies]
-instruments = [
-    { name = "mcp" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "mcp", marker = "extra == 'instruments'", specifier = ">=1.0,<2" },
-    { name = "opentelemetry-api", specifier = "~=1.43" },
-    { name = "opentelemetry-instrumentation", specifier = ">=0.64b0,<1" },
-    { name = "opentelemetry-util-genai", specifier = "~=1.3b0" },
-    { name = "wrapt", specifier = ">=1.17,<3" },
-]
-
-[[package]]
-name = "flashcat-otel"
-version = "0.1.0"
-source = { editable = "packages/flashcat-otel" }
+source = { editable = "packages/flashcat-genai-otel" }
 dependencies = [
     { name = "opentelemetry-api" },
     { name = "opentelemetry-exporter-otlp-proto-http" },
@@ -819,9 +769,9 @@ openai-agents = [
 
 [package.metadata]
 requires-dist = [
+    { name = "flashcat-genai-otel", extras = ["openai", "anthropic", "langchain", "openai-agents", "llama-index", "google-genai", "bedrock", "dashscope", "mcp", "crewai"], marker = "extra == 'all'" },
     { name = "flashcat-instrumentation-dashscope", marker = "extra == 'dashscope'", editable = "instrumentation/flashcat-instrumentation-dashscope" },
     { name = "flashcat-instrumentation-mcp", marker = "extra == 'mcp'", editable = "instrumentation/flashcat-instrumentation-mcp" },
-    { name = "flashcat-otel", extras = ["openai", "anthropic", "langchain", "openai-agents", "llama-index", "google-genai", "bedrock", "dashscope", "mcp", "crewai"], marker = "extra == 'all'" },
     { name = "openinference-instrumentation-crewai", marker = "extra == 'crewai'", specifier = "~=1.1" },
     { name = "opentelemetry-api", specifier = "~=1.43" },
     { name = "opentelemetry-exporter-otlp-proto-http", specifier = "~=1.43" },
@@ -834,6 +784,56 @@ requires-dist = [
     { name = "opentelemetry-instrumentation-genai-openai-agents", marker = "extra == 'openai-agents'", specifier = "~=1.3b0" },
     { name = "opentelemetry-instrumentation-google-genai", marker = "extra == 'google-genai'", specifier = "~=1.3b0" },
     { name = "opentelemetry-sdk", specifier = "~=1.43" },
+    { name = "opentelemetry-util-genai", specifier = "~=1.3b0" },
+    { name = "wrapt", specifier = ">=1.17,<3" },
+]
+
+[[package]]
+name = "flashcat-instrumentation-dashscope"
+version = "0.1.0"
+source = { editable = "instrumentation/flashcat-instrumentation-dashscope" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-util-genai" },
+    { name = "wrapt" },
+]
+
+[package.optional-dependencies]
+instruments = [
+    { name = "dashscope" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "dashscope", marker = "extra == 'instruments'", specifier = ">=1.20,<3" },
+    { name = "opentelemetry-api", specifier = "~=1.43" },
+    { name = "opentelemetry-instrumentation", specifier = ">=0.64b0,<1" },
+    { name = "opentelemetry-util-genai", specifier = "~=1.3b0" },
+    { name = "wrapt", specifier = ">=1.17,<3" },
+]
+
+[[package]]
+name = "flashcat-instrumentation-mcp"
+version = "0.1.0"
+source = { editable = "instrumentation/flashcat-instrumentation-mcp" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-instrumentation" },
+    { name = "opentelemetry-util-genai" },
+    { name = "wrapt" },
+]
+
+[package.optional-dependencies]
+instruments = [
+    { name = "mcp" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "mcp", marker = "extra == 'instruments'", specifier = ">=1.0,<2" },
+    { name = "opentelemetry-api", specifier = "~=1.43" },
+    { name = "opentelemetry-instrumentation", specifier = ">=0.64b0,<1" },
     { name = "opentelemetry-util-genai", specifier = "~=1.3b0" },
     { name = "wrapt", specifier = ">=1.17,<3" },
 ]

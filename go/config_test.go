@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"os"

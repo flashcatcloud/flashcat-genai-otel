@@ -26,7 +26,7 @@ import (
 	"github.com/cloudwego/eino/components/retriever"
 	"github.com/cloudwego/eino/components/tool"
 	"github.com/cloudwego/eino/schema"
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -38,7 +38,7 @@ import (
 const Version = "0.1.0"
 
 // ScopeName is the instrumentation scope name for spans created by this module.
-const ScopeName = "github.com/flashcatcloud/flashcat-otel/go/instrumentation/eino"
+const ScopeName = "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino"
 
 const (
 	targetModule    = "github.com/cloudwego/eino"
@@ -59,7 +59,7 @@ type Option func(*handler)
 // WithTracerProvider sets the TracerProvider for new spans. By default, each callback uses the current global provider.
 func WithTracerProvider(tp trace.TracerProvider) Option { return func(h *handler) { h.tp = tp } }
 
-// WithCaptureContent overrides the content capture switch, which defaults to flashcatotel.ContentCaptureEnabled().
+// WithCaptureContent overrides the content capture switch, which defaults to flashcatgenai.ContentCaptureEnabled().
 func WithCaptureContent(enabled bool) Option { return func(h *handler) { h.capture = &enabled } }
 
 type handler struct {
@@ -81,7 +81,7 @@ func NewHandler(opts ...Option) callbacks.Handler {
 			o(h)
 		}
 	}
-	flashcatotel.RegisterInstrumentation("eino", targetModule)
+	flashcatgenai.RegisterInstrumentation("eino", targetModule)
 	return h
 }
 
@@ -107,7 +107,7 @@ func (h *handler) captureOn() bool {
 	if h.capture != nil {
 		return *h.capture
 	}
-	return flashcatotel.ContentCaptureEnabled()
+	return flashcatgenai.ContentCaptureEnabled()
 }
 
 // kindOf maps a component to a GenAI operation. An empty result means the component produces no span.
