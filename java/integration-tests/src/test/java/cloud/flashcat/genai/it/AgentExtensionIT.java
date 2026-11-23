@@ -83,7 +83,7 @@ class AgentExtensionIT {
             FakeIngest.ReceivedSpan agent = find(spans, "invoke_agent kefu");
             assertNotNull(agent, "spans=" + spans + "\n" + out);
             assertEquals("flashcat.genai", agent.scope);
-            assertEquals("0.1.0", agent.scopeVersion);
+            assertEquals("0.2.0", agent.scopeVersion);
             assertEquals("invoke_agent", agent.attr("gen_ai.operation.name"));
             assertEquals(true, agent.attr("flashcat.genai.root"));
             assertEquals("c-agent", agent.attr("gen_ai.conversation.id"));

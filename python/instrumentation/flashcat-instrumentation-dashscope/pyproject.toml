@@ -1,6 +1,6 @@
 [project]
 name = "flashcat-instrumentation-dashscope"
-version = "0.1.0"
+version = "0.2.0"
 description = "OpenTelemetry GenAI instrumentation for Alibaba Cloud DashScope (Bailian) SDK, built on opentelemetry-util-genai"
 readme = "README.md"
 requires-python = ">=3.10"

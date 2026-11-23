@@ -15,10 +15,10 @@ Requires Go ≥ 1.25.0. Both the core and instrumentation modules depend on OTel
 ## Installation
 
 ```bash
-go get github.com/flashcatcloud/flashcat-genai-otel/go@v0.1.0
-go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai@v0.1.0   # if you use openai-go
-go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino@v0.1.0     # if you use Eino
-go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.1.0      # if you use the MCP Go SDK
+go get github.com/flashcatcloud/flashcat-genai-otel/go@v0.2.0
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/openai@v0.2.0   # if you use openai-go
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino@v0.2.0     # if you use Eino
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.2.0      # if you use the MCP Go SDK
 ```
 
 ```bash
@@ -162,7 +162,7 @@ If Eino's model component uses openai-go with the middleware above, one call pro
 ## MCP server (github.com/modelcontextprotocol/go-sdk)
 
 ```bash
-go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.1.0
+go get github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp@v0.2.0
 ```
 
 ```go

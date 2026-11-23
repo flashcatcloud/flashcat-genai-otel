@@ -6,7 +6,7 @@ Model call spans come from instrumentation built into the OTel Java Agent (opena
 The SDK also handles export to Flashcat, business semantics (agents, tools, workflows, and sessions), masking and truncation, and diagnostics.
 
 - Targets Java 8 bytecode, depends on OpenTelemetry Java 1.68.0, and has been verified with OpenTelemetry Java Agent 2.33.1.
-- Version 0.1.0, Apache-2.0.
+- Version 0.2.0, Apache-2.0.
 
 ## Integration options
 
@@ -30,10 +30,10 @@ export FLASHCAT_API_KEY=keyID:secret                               # the SDK han
 curl -L -o opentelemetry-javaagent.jar \
   https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.33.1/opentelemetry-javaagent.jar
 # Get the extension JAR from this repository's GitHub Releases (see RELEASING.md)
-curl -fL -O https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-agent-extension-0.1.0.jar
+curl -fL -O https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/flashcat-genai-otel-agent-extension-0.2.0.jar
 
 java -javaagent:/path/to/opentelemetry-javaagent.jar \
-     -Dotel.javaagent.extensions=/path/to/flashcat-genai-otel-agent-extension-0.1.0.jar \
+     -Dotel.javaagent.extensions=/path/to/flashcat-genai-otel-agent-extension-0.2.0.jar \
      -jar app.jar
 ```
 
@@ -107,7 +107,7 @@ The Agent's auto-instrumentation is unavailable in this setup. openai-java and B
   <dependency>
     <groupId>cloud.flashcat</groupId>
     <artifactId>flashcat-genai-otel</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
   </dependency>
 </dependencies>
 ```
@@ -129,17 +129,17 @@ Maven
 <dependency>
   <groupId>cloud.flashcat</groupId>
   <artifactId>flashcat-genai-otel</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
 Gradle
 
 ```kotlin
-implementation("cloud.flashcat:flashcat-genai-otel:0.1.0")
+implementation("cloud.flashcat:flashcat-genai-otel:0.2.0")
 ```
 
-The Agent extension is a standalone JAR, `cloud.flashcat:flashcat-genai-otel-agent-extension:0.1.0`. Save it to disk and point `-Dotel.javaagent.extensions` to it without adding it as a dependency.
+The Agent extension is a standalone JAR, `cloud.flashcat:flashcat-genai-otel-agent-extension:0.2.0`. Save it to disk and point `-Dotel.javaagent.extensions` to it without adding it as a dependency.
 `flashcat-genai-otel` depends only on OpenTelemetry (api, sdk, sdk-extension-autoconfigure, exporter-otlp). The SDK serializes diagnostics to JSON itself and requires no JSON library.
 
 ## Configuration
@@ -174,7 +174,7 @@ Flashcat.tool("search_kb", Flashcat.SpanOptions.create().description("Knowledge 
 ```
 
 - The callback runs immediately. Overloads are available with and without a return value. A callback can throw a checked exception. The SDK rethrows it **unchanged** (the same object), sets the span status to ERROR, sets `error.type`, and records an exception event.
-- The SDK sets semantic attributes when the span starts. The scope name is `flashcat.genai` and the version is `0.1.0`.
+- The SDK sets semantic attributes when the span starts. The scope name is `flashcat.genai` and the version is `0.2.0`.
 - When the content capture switch is on, agent and workflow spans get `gen_ai.input.messages` / `gen_ai.output.messages`
   (`[{"role":"user","parts":[{"type":"text","content":"…"}]}]`, with the role `assistant` for output). Tool spans get `gen_ai.tool.call.arguments` / `gen_ai.tool.call.result`.
   Strings are kept as is. Maps, lists, arrays, and primitive types are converted to JSON. Other objects use `toString()`. Values above 32 KiB are truncated and marked with `…[truncated]`.

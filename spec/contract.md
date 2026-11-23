@@ -155,7 +155,7 @@ The return value of `init()` has the same structure as `diagnostics()`, with the
 
 ```json
 {
-  "sdk": {"name": "flashcat-genai-otel", "version": "0.1.0", "language": "nodejs"},
+  "sdk": {"name": "flashcat-genai-otel", "version": "0.2.0", "language": "nodejs"},
   "enabled": true,
   "service_name": "kefu-agent",
   "environment": "prod",

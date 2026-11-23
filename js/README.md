@@ -9,7 +9,7 @@ Requires **Node.js ≥ 22.15.0** to meet the requirements of the current generat
 The package has yet to be published to npm. Install it from this repository's GitHub Releases (see [RELEASING.md](../RELEASING.md#install-from-github-releases)).
 
 ```bash
-npm install https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-0.1.0.tgz
+npm install https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.2.0/flashcat-genai-otel-0.2.0.tgz
 ```
 
 The package includes instrumentation for openai (4.19 through 6.x), the Anthropic SDK, and the OpenAI Agents SDK. For openai 7, LangChain, the Vercel AI SDK, and Bedrock, install the corresponding packages listed under [Instrumentation sources](#instrumentation-sources).
@@ -222,7 +222,7 @@ Runtime require and import hooks can intercept only model SDKs loaded from `node
 
 ```json
 {
-  "sdk": { "name": "flashcat-genai-otel", "version": "0.1.0", "language": "nodejs" },
+  "sdk": { "name": "flashcat-genai-otel", "version": "0.2.0", "language": "nodejs" },
   "enabled": true,
   "service_name": "kefu-agent",
   "environment": "prod",

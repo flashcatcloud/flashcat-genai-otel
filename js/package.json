@@ -1,6 +1,6 @@
 {
   "name": "@flashcat/genai-otel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Flashcat GenAI OTel SDK for AI agent observability: one-line setup on top of OpenTelemetry GenAI instrumentations",
   "license": "Apache-2.0",
   "main": "./dist/index.cjs",

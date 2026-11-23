@@ -76,7 +76,7 @@ final class OpenAiTelemetry {
 
     private static final Set<String> INFERENCE_OPS = Collections.unmodifiableSet(
             new HashSet<String>(Arrays.asList("chat", "text_completion", "generate_content", "embeddings")));
-    private static final String FALLBACK_VERSION = "0.1.0";
+    private static final String FALLBACK_VERSION = "0.2.0";
     private static final ReadableSpanMethods READABLE_SPAN = new ReadableSpanMethods();
 
     private static volatile OpenTelemetry cachedOtel;

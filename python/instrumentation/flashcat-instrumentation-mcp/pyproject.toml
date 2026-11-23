@@ -1,6 +1,6 @@
 [project]
 name = "flashcat-instrumentation-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "OpenTelemetry instrumentation for MCP Python SDK 1.x tool calls (client and server), following the OTel MCP semantic conventions"
 readme = "README.md"
 requires-python = ">=3.10"

@@ -65,7 +65,7 @@ function checkEndToEnd(c, result) {
   assert.equal(chat.resource['service.name'], 'kefu-agent');
   assert.equal(chat.resource['deployment.environment.name'], 'prod');
   assert.equal(chat.resource['telemetry.distro.name'], 'flashcat-genai-otel');
-  assert.equal(chat.resource['telemetry.distro.version'], '0.1.0');
+  assert.equal(chat.resource['telemetry.distro.version'], '0.2.0');
   assert.equal(chat.resource['telemetry.sdk.language'], 'nodejs');
   assert.equal(chat.attrs['gen_ai.conversation.id'], 'c-123');
   assert.equal(chat.attrs['user.id'], 'u-9');
@@ -76,7 +76,7 @@ function checkEndToEnd(c, result) {
   assert.equal(chat.traceId, agentSpan.traceId);
   assert.equal(agentSpan.name, 'invoke_agent kefu');
   assert.equal(agentSpan.scope, 'flashcat.genai');
-  assert.equal(agentSpan.scopeVersion, '0.1.0');
+  assert.equal(agentSpan.scopeVersion, '0.2.0');
   assert.equal(agentSpan.kind, 1, 'INTERNAL');
   assert.equal(agentSpan.attrs['gen_ai.agent.name'], 'kefu');
   assert.equal(agentSpan.attrs['gen_ai.conversation.id'], 'c-123');

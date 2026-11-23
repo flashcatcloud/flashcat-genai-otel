@@ -3,7 +3,7 @@ module github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp
 go 1.25.0
 
 require (
-	github.com/flashcatcloud/flashcat-genai-otel/go v0.1.0
+	github.com/flashcatcloud/flashcat-genai-otel/go v0.2.0
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	go.opentelemetry.io/otel v1.46.0
 	go.opentelemetry.io/otel/sdk v1.46.0
@@ -40,5 +40,5 @@ require (
 	google.golang.org/protobuf v1.36.12 // indirect
 )
 
-// 仓库内开发用；发布后由 go/v0.1.0 tag 解析，使用方不受 replace 影响
+// 仓库内开发用；发布后由 go/v0.2.0 tag 解析，使用方不受 replace 影响
 replace github.com/flashcatcloud/flashcat-genai-otel/go => ../..
