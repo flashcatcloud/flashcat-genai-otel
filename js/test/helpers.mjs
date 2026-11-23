@@ -15,16 +15,16 @@ export const APPS = join(ROOT, 'test', '.work', 'apps');
 
 export function appDir(name) {
   const d = join(APPS, name);
-  if (!existsSync(join(d, 'node_modules', '@flashcat', 'otel'))) {
+  if (!existsSync(join(d, 'node_modules', '@flashcat', 'genai-otel'))) {
     throw new Error(`测试应用 ${name} 未准备好，先运行 npm run test:setup`);
   }
   // Ensure the app tests the current build by comparing it with js/dist. Entry points reference chunks by content-based names.
-  const installed = join(d, 'node_modules', '@flashcat', 'otel', 'dist');
+  const installed = join(d, 'node_modules', '@flashcat', 'genai-otel', 'dist');
   const built = join(ROOT, 'dist');
   const same =
     readdirSync(installed).sort().join() === readdirSync(built).sort().join() &&
     readdirSync(built).every((f) => readFileSync(join(installed, f)).equals(readFileSync(join(built, f))));
-  if (!same) throw new Error(`测试应用 ${name} 里的 @flashcat/otel 不是当前构建，先运行 npm run test:setup`);
+  if (!same) throw new Error(`测试应用 ${name} 里的 @flashcat/genai-otel 不是当前构建，先运行 npm run test:setup`);
   return d;
 }
 

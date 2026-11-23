@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { refusedUrl, runScript, startCollector } from './helpers.mjs';
 
 const APP = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.trace('job', () => 1);
 otel.workflow('wf', () => 1)();

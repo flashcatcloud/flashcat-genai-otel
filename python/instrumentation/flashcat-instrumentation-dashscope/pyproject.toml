@@ -18,7 +18,7 @@ instruments = ["dashscope>=1.20,<3"]
 
 [project.urls]
 Homepage = "https://flashcat.cloud/"
-Source = "https://github.com/flashcatcloud/flashcat-otel"
+Source = "https://github.com/flashcatcloud/flashcat-genai-otel"
 
 [project.entry-points.opentelemetry_instrumentor]
 dashscope = "flashcat.instrumentation.dashscope:DashScopeInstrumentor"

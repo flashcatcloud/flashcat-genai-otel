@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // The fixture is one real Cursor 3.29.9 turn rebuilt from a shape capture

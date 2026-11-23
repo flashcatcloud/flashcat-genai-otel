@@ -18,7 +18,7 @@ test('The HTTP child agent is the AI root. Nested semantic spans and model calls
   withCollector(async (c, env) => {
     await runScript('bare', `
 import { SpanKind, trace } from '@opentelemetry/api';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 const ask = otel.llm('direct', async () => {});
 const askThroughCache = otel.llm('through-cache', async () => {});
@@ -73,7 +73,7 @@ test('Export marks spans that gain GenAI attributes late, and child spans read c
   withCollector(async (c, env) => {
     const { result } = await runScript('bare', `
 import { trace } from '@opentelemetry/api';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 const tr = trace.getTracer('biz');
 otel.trace('late root', (span) => span.setAttribute('gen_ai.operation.name', 'chat'));
@@ -102,7 +102,7 @@ console.log('RESULT:' + JSON.stringify(otel.diagnostics().semantics));
 test('GenAI classification matches the Flashcat backend, including Vercel ai. keys and the session ID exception', () =>
   withCollector(async (c, env) => {
     await runScript('bare', `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 for (const [name, attrs] of Object.entries({
   session: { 'gen_ai.conversation.id': 'c-1' },
@@ -132,7 +132,7 @@ test('Remote parents restored from traceparent do not propagate GenAI ancestry',
   withCollector(async (c, env) => {
     await runScript('bare', `
 import { context, propagation, ROOT_CONTEXT, trace } from '@opentelemetry/api';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false });
 otel.agent('upstream', () => otel.trace('forwarder', () => {
   const carrier = {};
@@ -157,7 +157,7 @@ test('A reused exporter receives only span-start markers, and OpenInference span
 import { context, trace } from '@opentelemetry/api';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 const mem = new InMemorySpanExporter();
 const sdk = new NodeSDK({ serviceName: 'x', spanProcessors: [
   otel.spanProcessor(), new SimpleSpanProcessor({ exporter: mem }),
@@ -193,7 +193,7 @@ console.log('RESULT:' + JSON.stringify({ mode: d.provider.exporter_mode, roots, 
 test('An OpenInference LangChain RunnableSequence is an AI root, and its children retain that ancestry when reconstructing local parent context', () =>
   withCollector(async (c, env) => {
     await runScript('oi', `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 otel.init({ serviceName: 'x', metrics: false });
 const { RunnableLambda, RunnableSequence } = require('@langchain/core/runnables');
 const { FakeListChatModel } = require('@langchain/core/utils/testing');
@@ -219,7 +219,7 @@ const chain = RunnableSequence.from([identity, model]);
 test('Ancestry tracking retains the most recent 65,536 spans with a GenAI ancestor', async () => {
   const { result } = await runScript('bare', `
 import { ROOT_CONTEXT, trace } from '@opentelemetry/api';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', exporter: 'none', metrics: false });
 const tr = trace.getTracer('biz');
 const attrs = { 'gen_ai.operation.name': 'chat' };

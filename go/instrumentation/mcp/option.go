@@ -10,13 +10,13 @@ type config struct {
 	captureContent *bool
 }
 
-// WithTracerProvider sets the TracerProvider for new spans. Each request defaults to the current global provider set by flashcatotel.Init.
+// WithTracerProvider sets the TracerProvider for new spans. Each request defaults to the current global provider set by flashcatgenai.Init.
 func WithTracerProvider(tp trace.TracerProvider) Option {
 	return func(c *config) { c.tracerProvider = tp }
 }
 
-// WithCaptureContent overrides the content capture switch. By default, each request calls flashcatotel.ContentCaptureEnabled(),
-// which uses the WithCaptureContent option passed to flashcatotel.Init or FLASHCAT_CAPTURE_CONTENT.
+// WithCaptureContent overrides the content capture switch. By default, each request calls flashcatgenai.ContentCaptureEnabled(),
+// which uses the WithCaptureContent option passed to flashcatgenai.Init or FLASHCAT_CAPTURE_CONTENT.
 func WithCaptureContent(enabled bool) Option {
 	return func(c *config) { c.captureContent = &enabled }
 }

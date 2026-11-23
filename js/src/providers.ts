@@ -46,7 +46,7 @@ export function buildResource(s: Settings): Resource {
   const attrs: Record<string, string> = {
     'service.name': s.serviceName || 'unknown_service',
     'deployment.environment.name': s.environment,
-    'telemetry.distro.name': 'flashcat-otel',
+    'telemetry.distro.name': 'flashcat-genai-otel',
     'telemetry.distro.version': VERSION,
     ...s.resourceAttributes,
   };

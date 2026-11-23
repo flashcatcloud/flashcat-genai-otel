@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // subLink is what a turn says about one subagent thread.

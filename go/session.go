@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"context"
@@ -177,7 +177,7 @@ func (sessionProcessor) OnStart(parent context.Context, s sdktrace.ReadWriteSpan
 			f.span != nil && f.span.SpanContext().SpanID() == trace.SpanContextFromContext(parent).SpanID() {
 			global.nested.Add(1)
 			if global.nestedWarned.CompareAndSwap(false, true) {
-				slog.Warn("flashcat-otel: " + nestedInferenceProblem)
+				slog.Warn("flashcat-genai-otel: " + nestedInferenceProblem)
 			}
 		}
 	}

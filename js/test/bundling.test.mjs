@@ -43,7 +43,7 @@ const httpFetch = (url, init = {}) =>
 `;
 
 const APP = (load, clientOpts = '') => `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 ${VENDOR}
 ${HTTP_FETCH}
 const { OpenAI } = ${load};
@@ -79,7 +79,7 @@ for (const [name, clientOpts] of [
   ['node:http (http.client.request.start)', ', fetch: httpFetch'],
 ]) {
   test(`Bundled OpenAI (${name}) becomes not_patched, reports how to externalize it, and warns once`, async () => {
-    const { result, stderr, spans } = await run(`require(vendor)`, clientOpts, ['--import', '@flashcat/otel/register']);
+    const { result, stderr, spans } = await run(`require(vendor)`, clientOpts, ['--import', '@flashcat/genai-otel/register']);
     assert.equal(result.a1, '您的订单已发货', 'Application output is unaffected');
     assert.equal(result.before.status, 'installed', 'The missing patch is detected only after a request');
     assert.equal(result.after.status, 'not_patched');
@@ -89,8 +89,8 @@ for (const [name, clientOpts] of [
     const p = problems[0];
     assert.match(p, /^openai 正在发模型请求（OpenAI\/JS 6\.49\.0 → \/v1\/chat\/completions），但插桩补丁没有生效/);
     assert.match(p, /打包工具把 openai 打进了 bundle/);
-    assert.match(p, /experimental: \{ serverComponentsExternalPackages: \['@flashcat\/otel', 'openai'\] \}/, 'Next.js 13–14 configuration');
-    assert.match(p, /顶层 serverExternalPackages: \['@flashcat\/otel', 'openai'\]/, 'Next.js 15 configuration');
+    assert.match(p, /experimental: \{ serverComponentsExternalPackages: \['@flashcat\/genai-otel', 'openai'\] \}/, 'Next.js 13–14 configuration');
+    assert.match(p, /顶层 serverExternalPackages: \['@flashcat\/genai-otel', 'openai'\]/, 'Next.js 15 configuration');
     assert.match(p, /webpack：用 externals/);
     assert.match(p, /esbuild：--external:openai/);
     const warns = stderr.split('\n').filter((l) => l.includes('WARN') && l.includes('not_patched'));
@@ -102,7 +102,7 @@ for (const [name, clientOpts] of [
 
 test('OpenAI loaded with require produces model spans and stays installed with global fetch and node:http', async () => {
   for (const clientOpts of ['', ', fetch: httpFetch']) {
-    const { result, stderr, spans } = await run(`require('openai')`, clientOpts, ['--import', '@flashcat/otel/register']);
+    const { result, stderr, spans } = await run(`require('openai')`, clientOpts, ['--import', '@flashcat/genai-otel/register']);
     assert.equal(result.after.status, 'installed', clientOpts);
     assert.ok(!result.d.problems.some((p) => p.includes('not_patched')), result.d.problems.join('\n'));
     assert.ok(!stderr.includes('not_patched'), stderr);
@@ -114,7 +114,7 @@ test('ESM patched via --import and import-in-the-middle avoids false reports', a
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
 await client.chat.completions.create({ model: 'gpt-4o', messages: [{ role: 'user', content: 'x' }] });
@@ -123,7 +123,7 @@ await otel.flush();
 console.log('RESULT:' + JSON.stringify(otel.diagnostics()));
 `;
     const { result: d, stderr } = await runScript('main', code, {
-      nodeArgs: ['--import', '@flashcat/otel/register'],
+      nodeArgs: ['--import', '@flashcat/genai-otel/register'],
       env: { FLASHCAT_ENDPOINT: c.url + '/v1/traces', FLASHCAT_API_KEY: 'k:s', FAKE_OPENAI: openai.url, OTEL_SERVICE_NAME: 'x', OTEL_METRICS_EXPORTER: 'none' },
     });
     assert.equal(inst(d, 'openai').status, 'installed');

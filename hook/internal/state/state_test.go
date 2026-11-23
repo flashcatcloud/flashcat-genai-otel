@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 func TestPathAndRoundTrip(t *testing.T) {

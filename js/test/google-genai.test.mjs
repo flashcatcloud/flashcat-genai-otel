@@ -124,7 +124,7 @@ function check(result, run) {
 test('Google GenAI with CommonJS code initialization', async () => {
   const run = 'genai-cjs';
   const code = `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
 const { GoogleGenAI } = require('@google/genai');
 (async () => {
@@ -135,13 +135,13 @@ ${BODY}
   check(result, run);
 });
 
-test('Google GenAI with ESM and node --import @flashcat/otel/register', async () => {
+test('Google GenAI with ESM and node --import @flashcat/genai-otel/register', async () => {
   const run = 'genai-esm';
-  const code = `import * as otel from '@flashcat/otel';
+  const code = `import * as otel from '@flashcat/genai-otel';
 import { GoogleGenAI } from '@google/genai';
 ${BODY}`;
   const { result } = await runScript('genai', code, {
-    nodeArgs: ['--import', '@flashcat/otel/register'],
+    nodeArgs: ['--import', '@flashcat/genai-otel/register'],
     env: env({ OTEL_SERVICE_NAME: 'x', OTEL_METRICS_EXPORTER: 'none', FLASHCAT_CAPTURE_CONTENT: 'span', OTEL_RESOURCE_ATTRIBUTES: `test.run=${run}` }),
   });
   check(result, run);
@@ -150,7 +150,7 @@ ${BODY}`;
 test('Google GenAI still records usage with message capture off', async () => {
   const run = 'genai-off';
   const code = `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 otel.init({ serviceName: 'x', metrics: false, resourceAttributes: { 'test.run': '${run}' } });
 const { GoogleGenAI } = require('@google/genai');
 (async () => {

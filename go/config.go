@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"fmt"
@@ -123,7 +123,7 @@ func WithDebug(enabled bool) Option { return func(o *options) { o.debug = enable
 // configError is the error Init returns for invalid explicit options, the sole exception in contract §2.1.
 type configError struct{ msg string }
 
-func (e *configError) Error() string { return "flashcat-otel: " + e.msg }
+func (e *configError) Error() string { return "flashcat-genai-otel: " + e.msg }
 
 // settings holds the resolved configuration in precedence order (explicit options, FLASHCAT_*, OTEL_*, defaults).
 type settings struct {
@@ -189,7 +189,7 @@ func parseContentExplicit(v ContentMode) (ContentMode, string, error) {
 		return ContentOff, eventProblem(raw), nil
 	}
 	if raw == "true" {
-		return "", "", &configError{msg: `capture_content="true" 有歧义，请用 flashcatotel.ContentSpan（写进 span 属性）或 ContentOff`}
+		return "", "", &configError{msg: `capture_content="true" 有歧义，请用 flashcatgenai.ContentSpan（写进 span 属性）或 ContentOff`}
 	}
 	return "", "", &configError{msg: fmt.Sprintf("capture_content 只能是 ContentOff / ContentSpan（或 off、no_content、span_only），收到 %q", string(v))}
 }

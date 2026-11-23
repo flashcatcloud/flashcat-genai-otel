@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"context"
@@ -124,7 +124,7 @@ func TestErrorReturnedUnchanged(t *testing.T) {
 		t.Fatalf("error changed: %#v", got)
 	}
 	s := spanByName(t, rec, "execute_tool boom")
-	if s.Status().Code != codes.Error || attrMap(s)["error.type"].AsString() != "*flashcatotel.orderErr" {
+	if s.Status().Code != codes.Error || attrMap(s)["error.type"].AsString() != "*flashcatgenai.orderErr" {
 		t.Fatalf("status=%v attrs=%v", s.Status(), attrMap(s))
 	}
 	if len(s.Events()) == 0 || s.Events()[0].Name != "exception" {

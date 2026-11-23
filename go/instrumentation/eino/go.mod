@@ -1,10 +1,10 @@
-module github.com/flashcatcloud/flashcat-otel/go/instrumentation/eino
+module github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/eino
 
 go 1.25.0
 
 require (
 	github.com/cloudwego/eino v0.8.0
-	github.com/flashcatcloud/flashcat-otel/go v0.1.0
+	github.com/flashcatcloud/flashcat-genai-otel/go v0.1.0
 	go.opentelemetry.io/otel v1.46.0
 	go.opentelemetry.io/otel/sdk v1.46.0
 	go.opentelemetry.io/otel/trace v1.46.0
@@ -59,4 +59,4 @@ require (
 )
 
 // 仓库内开发用；发布后由 go/v0.1.0 tag 解析，使用方不受 replace 影响
-replace github.com/flashcatcloud/flashcat-otel/go => ../..
+replace github.com/flashcatcloud/flashcat-genai-otel/go => ../..

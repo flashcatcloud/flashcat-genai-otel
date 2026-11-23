@@ -62,9 +62,9 @@ function main() {
     const dir = join(work, 'apps', name);
     mkdirSync(dir, { recursive: true });
     const pkg = {
-      name: `flashcat-otel-test-${name}`,
+      name: `flashcat-genai-otel-test-${name}`,
       private: true,
-      dependencies: { '@flashcat/otel': `file:${join(packDir, tgz)}`, ...deps },
+      dependencies: { '@flashcat/genai-otel': `file:${join(packDir, tgz)}`, ...deps },
     };
     writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg, null, 2));
     if (existsSync(join(dir, 'node_modules', '@flashcat'))) rmSync(join(dir, 'node_modules', '@flashcat'), { recursive: true, force: true });

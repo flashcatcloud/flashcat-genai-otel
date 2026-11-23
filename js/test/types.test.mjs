@@ -1,4 +1,4 @@
-// TypeScript ESM (.mts) and CJS (.cts) consumers can resolve declarations for @flashcat/otel and @flashcat/otel/register.
+// TypeScript ESM (.mts) and CJS (.cts) consumers can resolve declarations for @flashcat/genai-otel and @flashcat/genai-otel/register.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -7,8 +7,8 @@ import { join } from 'node:path';
 import { appDir, ROOT } from './helpers.mjs';
 
 const CONSUMER = `
-import * as otel from '@flashcat/otel';
-import type { InitOptions, Diagnostics, MaskingConfig } from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
+import type { InitOptions, Diagnostics, MaskingConfig } from '@flashcat/genai-otel';
 
 const masking: MaskingConfig = { extraPatterns: [{ name: 'order', pattern: /ORD-\\\\d+/, replacement: '[REDACTED:order]' }] };
 const opts: InitOptions = { serviceName: 'kefu-agent', captureContent: false, masking, exporter: 'auto' };
@@ -44,7 +44,7 @@ void [s, p, r, w, n, v, f, sd, e];
 test('TypeScript consumers in nodenext mode type-check both .mts and .cts', () => {
   const dir = join(appDir('bare'), 'types-check');
   mkdirSync(dir, { recursive: true });
-  writeFileSync(join(dir, 'consumer.mts'), CONSUMER + "\nimport '@flashcat/otel/register';\n");
+  writeFileSync(join(dir, 'consumer.mts'), CONSUMER + "\nimport '@flashcat/genai-otel/register';\n");
   writeFileSync(join(dir, 'consumer.cts'), CONSUMER);
   writeFileSync(
     join(dir, 'tsconfig.json'),

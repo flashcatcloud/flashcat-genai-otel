@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/claude"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/codex"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/cursor"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/claude"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/codex"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/cursor"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // parsers maps the CLI tool name to its parser constructor.

@@ -1,0 +1,54 @@
+[project]
+name = "flashcat-genai-otel"
+version = "0.1.0"
+description = "Flashcat GenAI OTel SDK for AI agent observability: one-line init on top of OpenTelemetry GenAI instrumentations"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{ name = "Flashcat" }]
+dependencies = [
+    "opentelemetry-api~=1.43",
+    "opentelemetry-sdk~=1.43",
+    "opentelemetry-exporter-otlp-proto-http~=1.43",
+    "opentelemetry-instrumentation>=0.64b0,<1",
+    "opentelemetry-util-genai~=1.3b0",
+    "wrapt>=1.17,<3",
+]
+
+[project.optional-dependencies]
+openai = ["opentelemetry-instrumentation-genai-openai~=1.3b0"]
+anthropic = ["opentelemetry-instrumentation-genai-anthropic~=1.3b0"]
+langchain = ["opentelemetry-instrumentation-genai-langchain~=1.3b0"]
+openai-agents = ["opentelemetry-instrumentation-genai-openai-agents~=1.3b0"]
+llama-index = ["opentelemetry-instrumentation-genai-llama-index~=1.3b0"]
+google-genai = ["opentelemetry-instrumentation-google-genai~=1.3b0"]
+bedrock = ["opentelemetry-instrumentation-genai-bedrock~=1.3b0"]
+dashscope = ["flashcat-instrumentation-dashscope~=0.1"]
+mcp = ["flashcat-instrumentation-mcp~=0.1"]
+crewai = ["openinference-instrumentation-crewai~=1.1"]
+all = [
+    "flashcat-genai-otel[openai,anthropic,langchain,openai-agents,llama-index,google-genai,bedrock,dashscope,mcp,crewai]",
+]
+
+[project.urls]
+Homepage = "https://flashcat.cloud/"
+Source = "https://github.com/flashcatcloud/flashcat-genai-otel"
+
+[project.entry-points.opentelemetry_distro]
+flashcat = "flashcat.genai._distro:FlashcatDistro"
+
+[project.entry-points.opentelemetry_configurator]
+flashcat = "flashcat.genai._distro:FlashcatConfigurator"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# PEP 420 namespace package. Leave src/flashcat without an __init__.py.
+packages = ["src/flashcat"]
+
+[tool.uv.sources]
+# Use workspace copies of Flashcat instrumentation during development and install released versions from the package index.
+flashcat-instrumentation-dashscope = { workspace = true }
+flashcat-instrumentation-mcp = { workspace = true }

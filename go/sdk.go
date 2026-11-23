@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"context"
@@ -87,7 +87,7 @@ func Init(ctx context.Context, opts ...Option) (*SDK, error) {
 	global.mu.Lock()
 	defer global.mu.Unlock()
 	if global.sdk != nil {
-		slog.Warn("flashcat-otel: init 已调用过，本次忽略（OTel 不允许替换已设置的全局 TracerProvider）")
+		slog.Warn("flashcat-genai-otel: init 已调用过，本次忽略（OTel 不允许替换已设置的全局 TracerProvider）")
 		return global.sdk, nil
 	}
 	s, err := resolve(opts)
@@ -337,7 +337,7 @@ func setupMetrics(ctx context.Context, s *settings, sdk *SDK, d *Diagnostics) {
 func emit(d Diagnostics, debug bool) {
 	if debug {
 		b, _ := json.Marshal(d)
-		slog.Info("flashcat-otel diagnostics: " + string(b))
+		slog.Info("flashcat-genai-otel diagnostics: " + string(b))
 		return
 	}
 	installed := []string{}
@@ -348,7 +348,7 @@ func emit(d Diagnostics, debug bool) {
 	}
 	brief := map[string]any{"service": d.ServiceName, "enabled": d.Enabled, "provider": d.Provider, "installed": installed, "problems": d.Problems}
 	b, _ := json.Marshal(brief)
-	slog.Info("flashcat-otel: " + string(b))
+	slog.Info("flashcat-genai-otel: " + string(b))
 }
 
 // Diagnostics returns the same structure as Init, with live export counters, semantics stats, and registered instrumentation.
@@ -498,7 +498,7 @@ func (p *flashcatProcessor) ForceFlush(ctx context.Context) error {
 
 // NewSpanProcessor returns the Flashcat SpanProcessor for a caller-managed TracerProvider. It provides
 // session processing, masking, batching, and OTLP export. Install it with
-// sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatotel.NewSpanProcessor(...))).
+// sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatgenai.NewSpanProcessor(...))).
 // Configuration follows the same rules as Init. Invalid options or a missing endpoint or credentials
 // leave only session processing enabled and produce a one-line slog warning.
 // A later Init call uses scenario C and avoids adding another export pipeline. GetDiagnostics reports the export counters.
@@ -507,24 +507,24 @@ func NewSpanProcessor(opts ...Option) sdktrace.SpanProcessor {
 	p := &flashcatProcessor{}
 	s, err := resolve(opts)
 	if err != nil {
-		slog.Warn("flashcat-otel: NewSpanProcessor 参数非法，只做会话处理", "error", err.Error())
+		slog.Warn("flashcat-genai-otel: NewSpanProcessor 参数非法，只做会话处理", "error", err.Error())
 		return p
 	}
 	p.lifecycle, p.shutdownTO = s.lifecycle, s.shutdownTimeout
 	for _, problem := range s.problems {
-		slog.Warn("flashcat-otel: " + problem)
+		slog.Warn("flashcat-genai-otel: " + problem)
 	}
 	switch {
 	case s.endpoint == "":
-		slog.Warn("flashcat-otel: 缺少 endpoint（FLASHCAT_ENDPOINT，完整 .../v1/traces URL），未启用导出")
+		slog.Warn("flashcat-genai-otel: 缺少 endpoint（FLASHCAT_ENDPOINT，完整 .../v1/traces URL），未启用导出")
 		return p
 	case authHeader(s) == "":
-		slog.Warn("flashcat-otel: 缺少 api_key（FLASHCAT_API_KEY=keyID:secret），未启用导出")
+		slog.Warn("flashcat-genai-otel: 缺少 api_key（FLASHCAT_API_KEY=keyID:secret），未启用导出")
 		return p
 	}
 	processor, err := newSpanExportProcessor(context.Background(), s)
 	if err != nil {
-		slog.Warn("flashcat-otel: 创建 exporter 失败", "error", err.Error())
+		slog.Warn("flashcat-genai-otel: 创建 exporter 失败", "error", err.Error())
 		return p
 	}
 	p.batch = processor

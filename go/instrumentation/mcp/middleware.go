@@ -22,7 +22,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 	"github.com/modelcontextprotocol/go-sdk/jsonrpc"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"go.opentelemetry.io/otel"
@@ -36,7 +36,7 @@ import (
 const Version = "0.1.0"
 
 // ScopeName is the instrumentation scope name for spans created by this module.
-const ScopeName = "github.com/flashcatcloud/flashcat-otel/go/instrumentation/mcp"
+const ScopeName = "github.com/flashcatcloud/flashcat-genai-otel/go/instrumentation/mcp"
 
 const (
 	targetModule  = "github.com/modelcontextprotocol/go-sdk"
@@ -44,7 +44,7 @@ const (
 	maxSerialized = 32 * 1024
 )
 
-// Middleware returns middleware for (*mcp.Server).AddReceivingMiddleware. It can be created before flashcatotel.Init
+// Middleware returns middleware for (*mcp.Server).AddReceivingMiddleware. It can be created before flashcatgenai.Init
 // because it reads the provider and content capture switch on each request. Diagnostics list it in
 // instrumentations as {"lib":"mcp","source":"flashcat"}.
 func Middleware(opts ...Option) mcp.Middleware {
@@ -54,7 +54,7 @@ func Middleware(opts ...Option) mcp.Middleware {
 			o(&cfg)
 		}
 	}
-	flashcatotel.RegisterInstrumentation("mcp", targetModule)
+	flashcatgenai.RegisterInstrumentation("mcp", targetModule)
 	return func(next mcp.MethodHandler) mcp.MethodHandler {
 		return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
 			if method != methodCall {
@@ -77,7 +77,7 @@ func (c *config) capture() bool {
 	if c.captureContent != nil {
 		return *c.captureContent
 	}
-	return flashcatotel.ContentCaptureEnabled()
+	return flashcatgenai.ContentCaptureEnabled()
 }
 
 func (c *config) handle(ctx context.Context, method string, req mcp.Request, next mcp.MethodHandler) (res mcp.Result, err error) {

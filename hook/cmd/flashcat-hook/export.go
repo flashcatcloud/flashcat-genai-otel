@@ -12,10 +12,10 @@ import (
 
 	"go.opentelemetry.io/collector/pdata/ptrace"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/claude"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/config"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/otlp"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/claude"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/config"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/otlp"
 )
 
 // cmdExport is a hidden developer command: parse a whole transcript and

@@ -1,6 +1,6 @@
-# flashcat-otel (Java)
+# flashcat-genai-otel (Java)
 
-The Java version of the Flashcat OTel SDK provides AI agent observability on top of the OpenTelemetry Java Agent or OTel SDK.
+The Java version of the Flashcat GenAI OTel SDK provides AI agent observability on top of the OpenTelemetry Java Agent or OTel SDK.
 Model call spans come from instrumentation built into the OTel Java Agent (openai-java Chat Completions and Embeddings, and Bedrock), additional openai-java instrumentation in the Flashcat extension
 (the Responses API and Chat Completions on clients the Agent does not wrap, such as Spring AI), or instrumentation built into the model SDK (Anthropic Java SDK).
 The SDK also handles export to Flashcat, business semantics (agents, tools, workflows, and sessions), masking and truncation, and diagnostics.
@@ -12,9 +12,9 @@ The SDK also handles export to Flashcat, business semantics (agents, tools, work
 
 | Option | When to use it | Setup |
 |---|---|---|
-| **Java Agent extension** (recommended) | Any Java application, with no code changes | `-javaagent:opentelemetry-javaagent.jar -Dotel.javaagent.extensions=flashcat-otel-agent-extension.jar` |
-| Initialization in code | You cannot add JVM arguments or are running without the Java Agent | Add `flashcat-otel` and call `FlashcatOtel.init()` at the beginning of `main` |
-| Spring Boot | Applications using the OTel Spring Boot Starter | Add the `flashcat-otel` dependency. The SPI takes effect automatically |
+| **Java Agent extension** (recommended) | Any Java application, with no code changes | `-javaagent:opentelemetry-javaagent.jar -Dotel.javaagent.extensions=flashcat-genai-otel-agent-extension.jar` |
+| Initialization in code | You cannot add JVM arguments or are running without the Java Agent | Add `flashcat-genai-otel` and call `FlashcatGenAI.init()` at the beginning of `main` |
+| Spring Boot | Applications using the OTel Spring Boot Starter | Add the `flashcat-genai-otel` dependency. The SPI takes effect automatically |
 
 All three options use the same configuration.
 
@@ -30,14 +30,14 @@ export FLASHCAT_API_KEY=keyID:secret                               # the SDK han
 curl -L -o opentelemetry-javaagent.jar \
   https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.33.1/opentelemetry-javaagent.jar
 # Get the extension JAR from this repository's GitHub Releases (see RELEASING.md)
-curl -fL -O https://github.com/flashcatcloud/flashcat-otel/releases/download/v0.1.0/flashcat-otel-agent-extension-0.1.0.jar
+curl -fL -O https://github.com/flashcatcloud/flashcat-genai-otel/releases/download/v0.1.0/flashcat-genai-otel-agent-extension-0.1.0.jar
 
 java -javaagent:/path/to/opentelemetry-javaagent.jar \
-     -Dotel.javaagent.extensions=/path/to/flashcat-otel-agent-extension-0.1.0.jar \
+     -Dotel.javaagent.extensions=/path/to/flashcat-genai-otel-agent-extension-0.1.0.jar \
      -jar app.jar
 ```
 
-The extension JAR contains only `cloud.flashcat.otel` classes (the build checks for the absence of `io/opentelemetry/**`). The Agent provides the OTel API and SDK.
+The extension JAR contains only `cloud.flashcat.genai` classes (the build checks for the absence of `io/opentelemetry/**`). The Agent provides the OTel API and SDK.
 The extension translates `FLASHCAT_*` into per-signal OTel settings (trace and metric endpoints, `http/protobuf`, gzip, a Basic auth header, and a 10-second timeout).
 It adds the session processor, wraps only OTLP exporters that target Flashcat to add masking, counters, and a shutdown deadline (see “Lifecycle”), and adds openai-java instrumentation (see below). `FLASHCAT_*` takes precedence over `OTEL_*`.
 An explicit `otel.metrics.exporter=none` setting (via `-D` or `OTEL_METRICS_EXPORTER`) is preserved and disables metric export.
@@ -58,20 +58,20 @@ follows the contract and contains the HTTP status code (such as `429`) when avai
 Flashcat export stays disabled if the endpoint or credentials are missing or the application name is invalid. In that case, if you have not configured your own OTLP export, the extension also disables the Agent's default
 `localhost:4318` export, records the problem in diagnostics, and logs one line.
 
-**To use only the semantic API without initializing it in code**, add the `flashcat-otel` dependency to your application (see the coordinates below). Spans from `Flashcat.agent(...)` enter the same export pipeline through the Agent's
-OTel API bridge. It is also safe to call `FlashcatOtel.init()` in the application. When it detects the Agent and extension, it returns diagnostics only (situation C) and creates no provider.
+**To use only the semantic API without initializing it in code**, add the `flashcat-genai-otel` dependency to your application (see the coordinates below). Spans from `Flashcat.agent(...)` enter the same export pipeline through the Agent's
+OTel API bridge. It is also safe to call `FlashcatGenAI.init()` in the application. When it detects the Agent and extension, it returns diagnostics only (situation C) and creates no provider.
 
 ### 2. Initialization in code
 
 ```java
-import cloud.flashcat.otel.Diagnostics;
-import cloud.flashcat.otel.FlashcatOtel;
+import cloud.flashcat.genai.Diagnostics;
+import cloud.flashcat.genai.FlashcatGenAI;
 
 public static void main(String[] args) {
     // Put this at the beginning of main, before creating model clients
-    Diagnostics d = FlashcatOtel.init();   // Reads configuration from FLASHCAT_* / OTEL_* environment variables
+    Diagnostics d = FlashcatGenAI.init();   // Reads configuration from FLASHCAT_* / OTEL_* environment variables
     // Or pass explicit options (explicit options > FLASHCAT_* > OTEL_* > defaults)
-    // FlashcatOtel.init(FlashcatOtel.Options.builder()
+    // FlashcatGenAI.init(FlashcatGenAI.Options.builder()
     //         .serviceName("kefu-agent")
     //         .endpoint("https://ingest.example.com/v1/traces")
     //         .apiKey("keyID:secret")
@@ -106,14 +106,14 @@ The Agent's auto-instrumentation is unavailable in this setup. openai-java and B
   </dependency>
   <dependency>
     <groupId>cloud.flashcat</groupId>
-    <artifactId>flashcat-otel</artifactId>
+    <artifactId>flashcat-genai-otel</artifactId>
     <version>0.1.0</version>
   </dependency>
 </dependencies>
 ```
 
-The Starter uses ServiceLoader to load the SPI in `flashcat-otel`. Use the same `FLASHCAT_*` environment variables for configuration. You can use `spring.application.name` as the application name.
-The OTel Spring Boot Starter leaves `GlobalOpenTelemetry` unset. After the Starter builds the SDK, `flashcat-otel` registers it globally if no global instance has been set.
+The Starter uses ServiceLoader to load the SPI in `flashcat-genai-otel`. Use the same `FLASHCAT_*` environment variables for configuration. You can use `spring.application.name` as the application name.
+The OTel Spring Boot Starter leaves `GlobalOpenTelemetry` unset. After the Starter builds the SDK, `flashcat-genai-otel` registers it globally if no global instance has been set.
 This lets semantic APIs such as `Flashcat.agent(...)` and the Anthropic SDK's built-in instrumentation export spans. See `notes` in the diagnostics.
 Explicit `otel.*` properties in `application.yml` take precedence over `FLASHCAT_*` because the Starter applies Spring configuration on top of the SPI result.
 
@@ -128,7 +128,7 @@ Maven
 ```xml
 <dependency>
   <groupId>cloud.flashcat</groupId>
-  <artifactId>flashcat-otel</artifactId>
+  <artifactId>flashcat-genai-otel</artifactId>
   <version>0.1.0</version>
 </dependency>
 ```
@@ -136,11 +136,11 @@ Maven
 Gradle
 
 ```kotlin
-implementation("cloud.flashcat:flashcat-otel:0.1.0")
+implementation("cloud.flashcat:flashcat-genai-otel:0.1.0")
 ```
 
-The Agent extension is a standalone JAR, `cloud.flashcat:flashcat-otel-agent-extension:0.1.0`. Save it to disk and point `-Dotel.javaagent.extensions` to it without adding it as a dependency.
-`flashcat-otel` depends only on OpenTelemetry (api, sdk, sdk-extension-autoconfigure, exporter-otlp). The SDK serializes diagnostics to JSON itself and requires no JSON library.
+The Agent extension is a standalone JAR, `cloud.flashcat:flashcat-genai-otel-agent-extension:0.1.0`. Save it to disk and point `-Dotel.javaagent.extensions` to it without adding it as a dependency.
+`flashcat-genai-otel` depends only on OpenTelemetry (api, sdk, sdk-extension-autoconfigure, exporter-otlp). The SDK serializes diagnostics to JSON itself and requires no JSON library.
 
 ## Configuration
 
@@ -162,7 +162,7 @@ Java treats unsupported `event`-style content capture values as capture off and 
 ## Semantic API
 
 ```java
-import cloud.flashcat.otel.Flashcat;
+import cloud.flashcat.genai.Flashcat;
 
 String out = Flashcat.agent("kefu", () -> answer(question));             // invoke_agent kefu
 String hits = Flashcat.tool("search_kb", () -> search(query));           // execute_tool search_kb
@@ -174,7 +174,7 @@ Flashcat.tool("search_kb", Flashcat.SpanOptions.create().description("Knowledge 
 ```
 
 - The callback runs immediately. Overloads are available with and without a return value. A callback can throw a checked exception. The SDK rethrows it **unchanged** (the same object), sets the span status to ERROR, sets `error.type`, and records an exception event.
-- The SDK sets semantic attributes when the span starts. The scope name is `flashcat.otel` and the version is `0.1.0`.
+- The SDK sets semantic attributes when the span starts. The scope name is `flashcat.genai` and the version is `0.1.0`.
 - When the content capture switch is on, agent and workflow spans get `gen_ai.input.messages` / `gen_ai.output.messages`
   (`[{"role":"user","parts":[{"type":"text","content":"…"}]}]`, with the role `assistant` for output). Tool spans get `gen_ai.tool.call.arguments` / `gen_ai.tool.call.result`.
   Strings are kept as is. Maps, lists, arrays, and primitive types are converted to JSON. Other objects use `toString()`. Values above 32 KiB are truncated and marked with `…[truncated]`.
@@ -183,7 +183,7 @@ Flashcat.tool("search_kb", Flashcat.SpanOptions.create().description("Knowledge 
 For asynchronous and streaming calls, start and end the span explicitly. The handle does not make the span current automatically.
 
 ```java
-import cloud.flashcat.otel.FlashcatSpan;
+import cloud.flashcat.genai.FlashcatSpan;
 import io.opentelemetry.context.Scope;
 
 FlashcatSpan span = Flashcat.startAgent("kefu", Flashcat.SpanOptions.create().input(question));
@@ -251,7 +251,7 @@ Initialization in code and Spring Boot work without this constraint.
 | Bedrock | The OTel Java Agent's aws-sdk instrumentation | Same as above |
 | Spring AI | For OpenAI model calls, Spring AI 2.x creates the client directly with `new OpenAIClientImpl` and uses `withRawResponse().create` for synchronous calls. The built-in Agent instrumentation misses these calls, so the Flashcat extension creates the `chat` spans (tested with Spring AI 2.1.0-RC2). The framework's built-in Micrometer Observation (ChatClient, advisors, tools) produces OTel spans through Micrometer Tracing (`micrometer-tracing-bridge-otel`, with an `io.micrometer.tracing.Tracer` bean in the application). The Java Agent does not bridge Micrometer traces. **This path is unverified in this release** | The application controls these settings. `spring.ai.chat.observations.log-prompt` / `log-completion` and `spring.ai.chat.client.observations.log-prompt` / `log-completion` write to **application logs**. `spring.ai.tools.observations.include-content` writes tool arguments and results to span attributes. The SDK cannot change these settings and explains this in diagnostics |
 | Anthropic Java SDK | Built into the SDK (uses `GlobalOpenTelemetry`) | The `anthropic.openTelemetryTracesContentMode` system property takes precedence over the `ANTHROPIC_OPEN_TELEMETRY_TRACES_CONTENT_MODE` environment variable (values `content` / `metadata_only`). If both are unset, the SDK sets the system property according to the content capture switch. Only clients built with `AnthropicOkHttpClient.fromEnv()` (or with `fromEnv()` on the builder) read these settings |
-| LangChain4j | OpenInference's LangChain4j instrumentation (`com.arize:openinference-instrumentation-langchain4j`). Attach the listener yourself (see the next section) | Use OpenInference's `TraceConfig` to set `hideInputs` / `hideOutputs` based on `FlashcatOtel.captureContentEnabled()` |
+| LangChain4j | OpenInference's LangChain4j instrumentation (`com.arize:openinference-instrumentation-langchain4j`). Attach the listener yourself (see the next section) | Use OpenInference's `TraceConfig` to set `hideInputs` / `hideOutputs` based on `FlashcatGenAI.captureContentEnabled()` |
 
 
 ## LangChain4j (OpenInference)
@@ -268,7 +268,7 @@ Pass the content capture switch explicitly to OpenInference's `TraceConfig`. By 
 ```
 
 ```java
-boolean content = FlashcatOtel.captureContentEnabled();
+boolean content = FlashcatGenAI.captureContentEnabled();
 LangChain4jInstrumentor oi = LangChain4jInstrumentor.instrument(
         TraceConfig.builder().hideInputs(!content).hideOutputs(!content).build());
 
@@ -298,13 +298,13 @@ These rules apply only to Flashcat's own export pipeline, which wraps the OTLP e
 | L2 Content | When content capture is enabled, the first 256 KiB of each content attribute is masked for email addresses, national ID numbers, bank card numbers, and mobile phone numbers, in that order. The rules match the Python version exactly and pass all cases in `spec/fixtures/masking.json` |
 | L3 Truncation | An individual string attribute longer than 512 KiB (in UTF-8 bytes) is truncated at a valid character boundary, and `flashcat.content_truncated=true` is set |
 
-Define custom rules with `FlashcatOtel.Options.builder().masking(MaskingConfig.builder().addPattern("order", "ORD-\\d{8}", "[REDACTED:order]").build())`.
+Define custom rules with `FlashcatGenAI.Options.builder().masking(MaskingConfig.builder().addPattern("order", "ORD-\\d{8}", "[REDACTED:order]").build())`.
 The SDK probes custom regular expressions for backtracking when they are constructed and throws `ConfigException` if they show significant backtracking.
 
 ## Diagnostics
 
 ```java
-Diagnostics d = FlashcatOtel.diagnostics();   // Same structure as the return value of init()
+Diagnostics d = FlashcatGenAI.diagnostics();   // Same structure as the return value of init()
 System.out.println(d.toJson());
 ```
 
@@ -312,7 +312,7 @@ The fields match the other languages (`sdk.language` is `java`). They include `e
 `provider` (`situation` A / B / C, `exporter_mode`, and `metrics`), `content`, `instrumentations`, `export` (`ok`, `http_401` and similar counters, `network`, and `last_error`),
 and `semantics` (`orphan_inference_spans`, `nested_inference_spans`, `masked_spans`, and `truncated_spans`).
 
-- In Java Agent mode, the application's `FlashcatOtel.diagnostics()` reads live counters from the extension through a platform MBean (`cloud.flashcat.otel:type=AgentExtension`).
+- In Java Agent mode, the application's `FlashcatGenAI.diagnostics()` reads live counters from the extension through a platform MBean (`cloud.flashcat.genai:type=AgentExtension`).
   The extension registers this MBean only after the first span starts. Until then, diagnostics can only say that the extension is loaded.
 - `instrumentations` lists known libraries detected on the classpath (openai-java, bedrock, anthropic-java, spring-ai, langchain4j) and their instrumentation sources.
   openai-java has two entries. The built-in Agent instrumentation has `source=upstream` (`api` is Chat Completions / Embeddings), and the extension instrumentation has `source=flashcat` (`api=responses`).
@@ -320,7 +320,7 @@ and `semantics` (`orphan_inference_spans`, `nested_inference_spans`, `masked_spa
 - If a library is present but its model calls do not produce spans (openai-java or Bedrock without the Agent, disabled or failed openai-java instrumentation in the extension, Spring AI without the Agent, or LangChain4j),
   diagnostics record the reason in `problems` and log one WARN line per reason. In Agent mode, the extension checks again when the first span starts, using the application thread's class loader.
   This also detects libraries inside Spring Boot executable JARs.
-- Initialization logs an INFO summary (JUL logger `cloud.flashcat.otel`). `debug(true)` logs the full diagnostics.
+- Initialization logs an INFO summary (JUL logger `cloud.flashcat.genai`). `debug(true)` logs the full diagnostics.
 
 | Current setup | `exporter` | Behavior |
 |---|---|---|
@@ -331,7 +331,7 @@ and `semantics` (`orphan_inference_spans`, `nested_inference_spans`, `masked_spa
 
 ## Lifecycle
 
-Use `FlashcatOtel.flush(Duration)` and `FlashcatOtel.shutdown(Duration)`. Initialization in code registers a shutdown hook that flushes and closes the SDK when the process exits.
+Use `FlashcatGenAI.flush(Duration)` and `FlashcatGenAI.shutdown(Duration)`. Initialization in code registers a shutdown hook that flushes and closes the SDK when the process exits.
 `shutdown` closes only providers that the SDK created.
 
 The shutdown timeout is a **total deadline** (contract §9, 5 seconds by default, configurable with `FLASHCAT_SHUTDOWN_TIMEOUT` or `shutdownTimeout(...)`). Flushing and closing traces and metrics share a single deadline measured from the start of shutdown.

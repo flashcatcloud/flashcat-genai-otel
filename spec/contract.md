@@ -1,4 +1,4 @@
-# Flashcat OTel SDK cross-language contract
+# Flashcat GenAI OTel SDK cross-language contract
 
 The Python, TypeScript, Go, and Java implementations must all follow this contract. If an implementation differs from this document, this document takes precedence.
 
@@ -35,7 +35,7 @@ Precedence follows this order. **Explicit arguments > `FLASHCAT_*` > standard `O
 | B. A provider exists and sends no data to Flashcat | Append the processor in languages that support it (Python and Go). In TypeScript and Java, fall back to `none` and include instructions in `problems` for adding the Flashcat processor to your SDK configuration |
 | C. A provider exists and already sends data to Flashcat | `reuse` installs only instrumentation and session processing, with no additional exporter |
 
-5. **Resource attributes** for scenario A are `service.name`, `deployment.environment.name`, `telemetry.distro.name=flashcat-otel`, and `telemetry.distro.version=<SDK version>`. The OTel SDK's own `telemetry.sdk.language` identifies the language.
+5. **Resource attributes** for scenario A are `service.name`, `deployment.environment.name`, `telemetry.distro.name=flashcat-genai-otel`, and `telemetry.distro.version=<SDK version>`. The OTel SDK's own `telemetry.sdk.language` identifies the language.
 
 ## 3. Export
 
@@ -43,7 +43,7 @@ Export uses OTLP/HTTP protobuf, gzip, `Authorization: Basic base64(keyID:secret)
 
 ## 4. Semantic spans
 
-Spans created by the SDK use the scope name `flashcat.otel` and the SDK version as the scope version. Attributes follow the OTel GenAI semantic conventions.
+Spans created by the SDK use the scope name `flashcat.genai` and the SDK version as the scope version. Attributes follow the OTel GenAI semantic conventions.
 
 | API | Span name | Kind | Attributes |
 |---|---|---|---|
@@ -155,7 +155,7 @@ The return value of `init()` has the same structure as `diagnostics()`, with the
 
 ```json
 {
-  "sdk": {"name": "flashcat-otel", "version": "0.1.0", "language": "nodejs"},
+  "sdk": {"name": "flashcat-genai-otel", "version": "0.1.0", "language": "nodejs"},
   "enabled": true,
   "service_name": "kefu-agent",
   "environment": "prod",

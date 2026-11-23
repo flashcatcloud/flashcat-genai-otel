@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 // fixture copies testdata/<name> into a temp dir and returns the main

@@ -1,6 +1,6 @@
 # Demo traffic (mock-traffic)
 
-Continuously sends simulated calls to Flashcat AI agent observability. Most calls succeed, and about 3% include errors. Calls go through the flashcat-otel SDK and its instrumentation.
+Continuously sends simulated calls to Flashcat AI agent observability. Most calls succeed, and about 3% include errors. Calls go through the flashcat-genai-otel SDK and its instrumentation.
 The model service is an in-process mock, so it makes no real model calls and incurs no charges.
 
 | Application (service.name) | Simulated behavior | Occasional errors |
@@ -15,7 +15,7 @@ About 3% of requests are also slow (an extra 1.5–2.8 seconds of latency, with 
 
 ```bash
 python3 -m venv venv
-./venv/bin/pip install flashcat_instrumentation_dashscope-*.whl 'flashcat_otel-*.whl[openai,dashscope]' openai
+./venv/bin/pip install flashcat_instrumentation_dashscope-*.whl 'flashcat_genai_otel-*.whl[openai,dashscope]' openai
 cat > .env <<'ENV'
 FLASHCAT_ENDPOINT=http://127.0.0.1:4320/v1/traces
 FLASHCAT_API_KEY=<keyID:secret>

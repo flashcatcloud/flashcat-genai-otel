@@ -23,7 +23,7 @@ export interface InstrumentationItem {
 }
 
 const LOADED_BEFORE_HINT =
-  '目标库在 init 之前已被加载，补丁可能打不上；请用 node --import @flashcat/otel/register 启动，或把 init 放在导入模型 SDK 之前';
+  '目标库在 init 之前已被加载，补丁可能打不上；请用 node --import @flashcat/genai-otel/register 启动，或把 init 放在导入模型 SDK 之前';
 
 /** Resolve target libraries from the application entry point's directory, then the current working directory. */
 export function appBases(): string[] {
@@ -39,7 +39,7 @@ export function appBases(): string[] {
 }
 
 function requireFrom(base: string): NodeJS.Require {
-  return createRequire(path.join(base, '__flashcat_otel__.js'));
+  return createRequire(path.join(base, '__flashcat_genai_otel__.js'));
 }
 
 /**

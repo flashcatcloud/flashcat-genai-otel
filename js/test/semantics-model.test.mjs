@@ -26,7 +26,7 @@ function byOp(spans) {
 test('llm, embedding, and retrieval span names, kinds, and attributes, annotate fields, and retrieval content masking', async () => {
   const run = 'model-spans';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
 const ask = otel.llm('qwen-max', async (prompt) => {
   otel.annotate({
@@ -93,7 +93,7 @@ console.log('RESULT:' + JSON.stringify(otel.diagnostics().semantics));
 test('annotate respects the content capture switch and is a no-op outside a semantic span, including inside trace', async () => {
   const run = 'annotate-scope';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, resourceAttributes: { 'test.run': '${run}' } });
 otel.annotate({ output: '不在语义 span 里', tags: { a: 'b' } });
 const ask = otel.llm('m1', (p) => { otel.annotate({ input: 'secret prompt', output: 'secret answer', usage: { inputTokens: 3 } }); return 'x'; });
@@ -115,7 +115,7 @@ console.log('RESULT:{"ok":true}');
 test('Annotated output takes precedence, non-array retrieval results become one document, and oversized lists remain valid JSON', async () => {
   const run = 'annotate-output';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
 otel.tool('lookup', (id) => { otel.annotate({ output: { status: 'shipped' } }); return 'raw'; })('A-1');
 otel.retrieval('kb', (q) => '只有一段')('q');
@@ -139,7 +139,7 @@ test('An instrumented model call inside a manual llm span increments nested_infe
   const run = 'nested';
   const code = `
 import { trace } from '@opentelemetry/api';
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, resourceAttributes: { 'test.run': '${run}' } });
 const tracer = trace.getTracer('@opentelemetry/instrumentation-openai');
 const ask = otel.llm('gpt-4o', async () => {

@@ -91,11 +91,11 @@ function requestInfo(channel: string, msg: any): { ua: string; path: string } | 
 /** Chinese diagnostics message that explains common causes and how to externalize the package in Next.js, webpack, or esbuild. */
 export function notPatchedProblem(lib: string, status: string, ua: string, path: string): string {
   const pkg = CATALOG.find((e) => e.lib === lib)?.target ?? lib;
-  const list = `['@flashcat/otel', '${pkg}']`;
+  const list = `['@flashcat/genai-otel', '${pkg}']`;
   const head = `${pkg} 正在发模型请求（${ua.trim()} → ${path}），但插桩补丁没有生效，这些调用不会产生 span（状态 not_patched）。`;
   const loadOrder =
     status === 'loaded_before_init'
-      ? `${pkg} 在 init 之前已被加载：请用 node --import @flashcat/otel/register 启动，或把 init 放在导入模型 SDK 之前。另一个常见原因是`
+      ? `${pkg} 在 init 之前已被加载：请用 node --import @flashcat/genai-otel/register 启动，或把 init 放在导入模型 SDK 之前。另一个常见原因是`
       : '常见原因是';
   return (
     head +

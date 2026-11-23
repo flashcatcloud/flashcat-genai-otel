@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/flashcatcloud/flashcat-otel/hook/internal/model"
+	"github.com/flashcatcloud/flashcat-genai-otel/hook/internal/model"
 )
 
 func clearEnv(t *testing.T) {

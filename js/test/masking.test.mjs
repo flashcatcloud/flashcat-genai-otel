@@ -38,7 +38,7 @@ test('The source matches the fixture exactly for default rules, key regex, conte
 test('All masking.json key_cases and content_cases pass through init, span creation, masking, and protobuf export', async () => {
   const run = 'mask-fixture';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import { readFileSync } from 'node:fs';
 const fx = JSON.parse(readFileSync(${JSON.stringify(join(ROOT, '..', 'spec', 'fixtures', 'masking.json'))}, 'utf8'));
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
@@ -64,7 +64,7 @@ console.log('RESULT:{}');
 test('Capture off skips L2, L1 preserves counters, and L3 marks truncation at a valid character boundary', async () => {
   const run = 'mask-l1l3';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, masking: { truncateBytes: 10 }, resourceAttributes: { 'test.run': '${run}' } });
 otel.trace('s', () => {}, {
   'http.request.header.authorization': 'Bearer abc',
@@ -90,7 +90,7 @@ console.log('RESULT:' + JSON.stringify(otel.diagnostics().semantics));
 test('Truncation defaults to 512 KiB and additional custom rules apply', async () => {
   const run = 'mask-big';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span',
   masking: { extraPatterns: [{ name: 'order', pattern: /ORD-\\d{6}/, replacement: '[REDACTED:order]' }] },
   resourceAttributes: { 'test.run': '${run}' } });
@@ -124,7 +124,7 @@ test('The linear email matcher agrees with the regex on 400 random strings and h
   const expected = cases.map((s) => s.replace(rx, email.replacement));
   const big = 'A'.repeat(256 * 1024 - 10) + '@nodomain';
   const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 otel.init({ serviceName: 'x', metrics: false, captureContent: 'span', resourceAttributes: { 'test.run': '${run}' } });
 const cases = ${JSON.stringify(cases)};
 cases.forEach((s, i) => otel.trace('r-' + i, () => {}, { 'gen_ai.tool.call.result': s }));

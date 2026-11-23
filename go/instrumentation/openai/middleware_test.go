@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 	"github.com/openai/openai-go/v3"
 	"github.com/openai/openai-go/v3/option"
 	"github.com/openai/openai-go/v3/responses"
@@ -146,7 +146,7 @@ func TestChatNonStreamingContent(t *testing.T) {
 }
 
 func TestContentFollowsCoreSwitchByDefault(t *testing.T) {
-	// Without WithCaptureContent, the middleware uses flashcatotel.ContentCaptureEnabled().
+	// Without WithCaptureContent, the middleware uses flashcatgenai.ContentCaptureEnabled().
 	// This process has not called Init, so the setting comes from the environment.
 	t.Setenv("FLASHCAT_CAPTURE_CONTENT", "span")
 	rec := tracetest.NewSpanRecorder()
@@ -446,8 +446,8 @@ func TestDurationMetric(t *testing.T) {
 
 func TestRegisteredInDiagnostics(t *testing.T) {
 	_ = Middleware()
-	var got *flashcatotel.InstrumentationStatus
-	for _, it := range flashcatotel.GetDiagnostics().Instrumentations {
+	var got *flashcatgenai.InstrumentationStatus
+	for _, it := range flashcatgenai.GetDiagnostics().Instrumentations {
 		if it.Lib == "openai" {
 			it := it
 			got = &it
@@ -462,13 +462,13 @@ func TestRegisteredInDiagnostics(t *testing.T) {
 func TestParentSpanAndSession(t *testing.T) {
 	rec := tracetest.NewSpanRecorder()
 	// The core SDK's NewSpanProcessor only processes sessions when no endpoint is configured. Use it to verify session attributes.
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatotel.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatgenai.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
 	otel.SetTracerProvider(tp)
 	f := newFakeOpenAI(t)
 	c := openai.NewClient(option.WithBaseURL(f.baseURL()), option.WithAPIKey("sk"), option.WithMaxRetries(0),
 		option.WithMiddleware(Middleware(WithCaptureContent(false))))
-	ctx := flashcatotel.WithSession(context.Background(), flashcatotel.Session{ConversationID: "c-123", UserID: "u-9"})
-	err := flashcatotel.Agent(ctx, "kefu", func(ctx context.Context) error {
+	ctx := flashcatgenai.WithSession(context.Background(), flashcatgenai.Session{ConversationID: "c-123", UserID: "u-9"})
+	err := flashcatgenai.Agent(ctx, "kefu", func(ctx context.Context) error {
 		_, err := c.Chat.Completions.New(ctx, chatParams())
 		return err
 	})

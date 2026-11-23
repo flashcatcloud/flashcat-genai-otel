@@ -22,7 +22,7 @@ case $VERSION in
 	;;
 esac
 
-BASE_URL=${FLASHCAT_HOOK_BASE_URL:-https://github.com/flashcatcloud/flashcat-otel/releases/download}
+BASE_URL=${FLASHCAT_HOOK_BASE_URL:-https://github.com/flashcatcloud/flashcat-genai-otel/releases/download}
 BASE_URL=${BASE_URL%/}
 
 cd "$(dirname "$0")/.."

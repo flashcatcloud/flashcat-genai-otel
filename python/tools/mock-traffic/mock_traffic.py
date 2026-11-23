@@ -1,6 +1,6 @@
 """Demo traffic for Flashcat AI agent observability: continuously simulates normal calls of an AI application, with occasional errors.
 
-Goes through the real flashcat-otel SDK and instrumentations (OpenAI-compatible, DashScope). The model service is an
+Goes through the real flashcat-genai-otel SDK and instrumentations (OpenAI-compatible, DashScope). The model service is an
 in-process fake, so no real model is called and nothing is billed. One process simulates one application (OTel's
 service.name is per process):
 
@@ -243,26 +243,26 @@ def pick_fault(rate: float, kinds: list[tuple[str, float]]) -> str | None:
     return kinds[-1][0]
 
 
-def build_kefu(otel, base_url: str):
+def build_kefu(genai, base_url: str):
     import openai
 
     client = openai.OpenAI(base_url=f"{base_url}/v1", api_key="sk-mock", timeout=4, max_retries=0)
     sessions = Sessions("kefu")
     faults = [("rate_limit", 3), ("server_error", 2), ("timeout", 1), ("tool_error", 3), ("no_usage", 1)]
 
-    @otel.tool("lookup_order")
+    @genai.tool("lookup_order")
     def lookup_order(order_id: str, fault: str | None):
         time.sleep(random.uniform(0.02, 0.12))
         if fault == "tool_error":
             raise TimeoutError(f"order-service timeout after 3000ms (order_id={order_id})")
         return {"order_id": order_id, "status": random.choice(["shipped", "packing", "delivered"]), "warehouse": "SH-02"}
 
-    @otel.tool("search_faq")
+    @genai.tool("search_faq")
     def search_faq(query: str):
         time.sleep(random.uniform(0.01, 0.05))
         return {"hits": random.randint(1, 5), "top": "退换货政策"}
 
-    @otel.agent("kefu")
+    @genai.agent("kefu")
     def answer(question: str, topic: str, fault: str | None):
         # Use only Chinese models in the demo. Match names in the bundled pricing catalog, which covers Chinese providers and OpenRouter as of 2026-11-18.
         model = "kimi-k2.6" if random.random() < 0.25 else "glm-5.3-flash"
@@ -295,13 +295,13 @@ def build_kefu(otel, base_url: str):
         # Only order lookups can raise tool errors, so force the order topic when injecting one.
         topic = "order" if fault == "tool_error" else random.choice(["order", "order", "refund", "invoice"])
         q = random.choice(questions[topic]).format(phone=random.choice(PHONES), email=random.choice(EMAILS), num=random.randint(10000, 99999), name=random.choice(SURNAMES) + "先生")
-        with otel.session(conversation_id=s["id"], user_id=s["user"], tags={"channel": random.choice(["app", "web", "miniprogram"]), "topic": topic}):
+        with genai.session(conversation_id=s["id"], user_id=s["user"], tags={"channel": random.choice(["app", "web", "miniprogram"]), "topic": topic}):
             answer(q, topic, fault)
 
     return run_once
 
 
-def build_order(otel, base_url: str):
+def build_order(genai, base_url: str):
     import openai
 
     client = openai.OpenAI(base_url=f"{base_url}/v1", api_key="sk-mock", timeout=4, max_retries=0)
@@ -319,24 +319,24 @@ def build_order(otel, base_url: str):
             return "".join(out)
         return client.chat.completions.create(**kwargs).choices[0].message.content
 
-    @otel.tool("query_logistics")
+    @genai.tool("query_logistics")
     def query_logistics(order_id: str, fault: str | None):
         time.sleep(random.uniform(0.05, 0.3))
         if fault == "tool_error":
             raise ConnectionError("logistics-gateway: upstream connect error or disconnect/reset before headers")
         return {"order_id": order_id, "node": random.choice(["杭州转运中心", "上海分拨中心", "派送站点"])}
 
-    @otel.tool("notify_user")
+    @genai.tool("notify_user")
     def notify_user(user: str, text: str):
         time.sleep(random.uniform(0.01, 0.04))
         return {"sent": True}
 
-    @otel.agent("logistics-specialist")
+    @genai.agent("logistics-specialist")
     def logistics(order_id: str, fault: str | None):
         info = query_logistics(order_id, fault)
         return chat("logistics", f"根据物流信息给用户写一句说明：{json.dumps(info, ensure_ascii=False)}", fault if fault in ("rate_limit", "server_error", "timeout") else None, stream=random.random() < 0.5)
 
-    @otel.agent("order-planner")
+    @genai.agent("order-planner")
     def plan_and_run(order_id: str, user: str, fault: str | None):
         plan_fault = fault if fault == "no_usage" else None
         chat("plan", f"用户询问订单 {order_id} 的配送进度，给出处理步骤", plan_fault)
@@ -347,13 +347,13 @@ def build_order(otel, base_url: str):
     def run_once(fault_rate: float) -> None:
         s = sessions.pick()
         fault = pick_fault(fault_rate, faults)
-        with otel.session(conversation_id=s["id"], user_id=s["user"], tags={"channel": "app", "tier": random.choice(["vip", "normal", "normal"])}):
+        with genai.session(conversation_id=s["id"], user_id=s["user"], tags={"channel": "app", "tier": random.choice(["vip", "normal", "normal"])}):
             plan_and_run(f"A{random.randint(10000, 99999)}", s["user"], fault)
 
     return run_once
 
 
-def build_rag(otel, base_url: str):
+def build_rag(genai, base_url: str):
     import dashscope
     from dashscope import Generation, TextEmbedding
 
@@ -363,14 +363,14 @@ def build_rag(otel, base_url: str):
     faults = [("rate_limit", 4), ("server_error", 2), ("tool_error", 3), ("no_usage", 1)]
     docs = ["员工差旅报销制度.pdf", "生产变更管理规范.md", "IT 服务台 FAQ.md", "新人入职指南.docx", "信息安全管理办法.pdf"]
 
-    @otel.tool("vector_search")
+    @genai.tool("vector_search")
     def vector_search(query: str, fault: str | None):
         time.sleep(random.uniform(0.03, 0.2))
         if fault == "tool_error":
             raise RuntimeError("milvus: collection kb_v3 not loaded")
         return [{"doc": d, "score": round(random.uniform(0.62, 0.93), 3)} for d in random.sample(docs, 3)]
 
-    @otel.agent("kb-assistant")
+    @genai.agent("kb-assistant")
     def ask(question: str, fault: str | None):
         TextEmbedding.call(model="text-embedding-v3", input=question)
         try:
@@ -392,7 +392,7 @@ def build_rag(otel, base_url: str):
     def run_once(fault_rate: float) -> None:
         s = sessions.pick()
         fault = pick_fault(fault_rate, faults)
-        with otel.session(conversation_id=s["id"], user_id=s["user"], tags={"dept": random.choice(["研发", "销售", "行政"])}):
+        with genai.session(conversation_id=s["id"], user_id=s["user"], tags={"dept": random.choice(["研发", "销售", "行政"])}):
             ask(random.choice(questions), fault)
 
     return run_once
@@ -405,8 +405,8 @@ PROFILES = {
 }
 
 
-def export_summary(otel) -> str:
-    return json.dumps({"flashcat": otel.diagnostics().get("export")}, default=str)
+def export_summary(genai) -> str:
+    return json.dumps({"flashcat": genai.diagnostics().get("export")}, default=str)
 
 
 def main() -> None:
@@ -423,12 +423,12 @@ def main() -> None:
 
     default_app, build = PROFILES[args.profile]
     os.environ.setdefault("OTEL_RESOURCE_ATTRIBUTES", f"deployment.environment.name={os.environ.get('MOCK_ENV', 'prod')}")
-    from flashcat import otel
+    from flashcat import genai
 
-    diag = otel.init(service_name=args.app or default_app, capture_content="span")
-    log.info("flashcat-otel 初始化：%s", json.dumps({k: diag.get(k) for k in ("provider", "instrumentations")}, ensure_ascii=False, default=str))
+    diag = genai.init(service_name=args.app or default_app, capture_content="span")
+    log.info("flashcat-genai-otel 初始化：%s", json.dumps({k: diag.get(k) for k in ("provider", "instrumentations")}, ensure_ascii=False, default=str))
 
-    run_once = build(otel, base_url)
+    run_once = build(genai, base_url)
     interval = float(os.environ.get("MOCK_INTERVAL", "4"))
     fault_rate = float(os.environ.get("MOCK_FAULT_RATE", "0.03"))
 
@@ -448,12 +448,12 @@ def main() -> None:
         if args.once:
             break
         if time.time() - last_report > 300:
-            log.info("runs=%d errors=%d export=%s", runs, errors, export_summary(otel))
+            log.info("runs=%d errors=%d export=%s", runs, errors, export_summary(genai))
             last_report = time.time()
         stop.wait(random.expovariate(1 / interval))
 
-    otel.flush(10)
-    log.info("退出：runs=%d errors=%d export=%s", runs, errors, export_summary(otel))
+    genai.flush(10)
+    log.info("退出：runs=%d errors=%d export=%s", runs, errors, export_summary(genai))
 
 
 if __name__ == "__main__":

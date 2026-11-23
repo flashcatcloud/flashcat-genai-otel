@@ -34,7 +34,7 @@ jobs:
           import tomllib
 
           packages = (
-              "packages/flashcat-otel",
+              "packages/flashcat-genai-otel",
               "instrumentation/flashcat-instrumentation-dashscope",
               "instrumentation/flashcat-instrumentation-mcp",
           )
@@ -51,7 +51,7 @@ jobs:
         run: |
           uv build --package flashcat-instrumentation-dashscope --out-dir ../dist/dashscope
           uv build --package flashcat-instrumentation-mcp --out-dir ../dist/mcp
-          uv build --package flashcat-otel --out-dir ../dist/sdk
+          uv build --package flashcat-genai-otel --out-dir ../dist/sdk
       - name: Check distribution metadata
         run: uvx --python 3.12 twine check --strict dist/*/*
       - uses: actions/upload-artifact@v4
@@ -110,15 +110,15 @@ jobs:
         run: |
           python -m venv "$RUNNER_TEMP/verify-pypi"
           source "$RUNNER_TEMP/verify-pypi/bin/activate"
-          requirements=("flashcat-otel[all]==$VERSION")
+          requirements=("flashcat-genai-otel[all]==$VERSION")
           if [[ "$INDEX" == testpypi ]]; then
             # Download the first-party wheels from TestPyPI and resolve third-party dependencies on PyPI.
             wheels="$RUNNER_TEMP/testpypi-wheels"
             python -m pip download --no-deps --only-binary=:all: \
               --index-url https://test.pypi.org/simple/ --dest "$wheels" \
-              "flashcat-otel==$VERSION" "flashcat-instrumentation-dashscope==$VERSION" \
+              "flashcat-genai-otel==$VERSION" "flashcat-instrumentation-dashscope==$VERSION" \
               "flashcat-instrumentation-mcp==$VERSION"
-            sdk_wheel=("$wheels"/flashcat_otel-*.whl)
+            sdk_wheel=("$wheels"/flashcat_genai_otel-*.whl)
             requirements=(
               "${sdk_wheel[0]}[all]"
               "$wheels"/flashcat_instrumentation_dashscope-*.whl
@@ -127,4 +127,4 @@ jobs:
           fi
           python -m pip install --index-url https://pypi.org/simple/ "${requirements[@]}"
           python -m pip check
-          python -c 'from flashcat import otel; from flashcat.instrumentation.dashscope import DashScopeInstrumentor; from flashcat.instrumentation.mcp import MCPInstrumentor'
+          python -c 'from flashcat import genai; from flashcat.instrumentation.dashscope import DashScopeInstrumentor; from flashcat.instrumentation.mcp import MCPInstrumentor'

@@ -1,4 +1,4 @@
-package flashcatotel
+package flashcatgenai
 
 import (
 	"context"
@@ -161,7 +161,7 @@ func (e *countingExporter) ExportSpans(ctx context.Context, spans []sdktrace.Rea
 	defer func() {
 		if r := recover(); r != nil { // Keep SDK failures from affecting application code.
 			e.stats.inc("network", 1, fmt.Sprintf("panic: %v", r))
-			err = fmt.Errorf("flashcat-otel: export panic: %v", r)
+			err = fmt.Errorf("flashcat-genai-otel: export panic: %v", r)
 		}
 	}()
 	err = e.inner.ExportSpans(context.WithValue(ctx, callRecordKey{}, rec), spans)

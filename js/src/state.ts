@@ -1,6 +1,6 @@
 /**
- * Store process-wide state on globalThis. The --import @flashcat/otel/register entry point loads the ESM build,
- * while require('@flashcat/otel') in a CommonJS app loads a separate CJS module instance.
+ * Store process-wide state on globalThis. The --import @flashcat/genai-otel/register entry point loads the ESM build,
+ * while require('@flashcat/genai-otel') in a CommonJS app loads a separate CJS module instance.
  * Sharing state keeps init idempotent and gives diagnostics the same data in both builds.
  */
 
@@ -65,7 +65,7 @@ export interface SharedState {
   instances: Record<string, { source: string; inst: any }>;
 }
 
-const KEY = Symbol.for('flashcat.otel.state');
+const KEY = Symbol.for('flashcat.genai.state');
 
 export function state(): SharedState {
   const g = globalThis as any;

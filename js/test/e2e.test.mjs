@@ -31,7 +31,7 @@ console.log('RESULT:' + JSON.stringify({ out, diag: otel.diagnostics() }));
 
 // Call init before require('openai'), as in the Python test.
 const CJS_APP = (content, question) => `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 (async () => {
 ${BODY(content, question).replace("otel.init(", "otel.init(").replace("const client =", "const { OpenAI } = require('openai');\nconst client =")}
 })();
@@ -64,7 +64,7 @@ function checkEndToEnd(c, result) {
   assert.ok(chat && agentSpan && toolSpan, spans.map((s) => s.name).join(','));
   assert.equal(chat.resource['service.name'], 'kefu-agent');
   assert.equal(chat.resource['deployment.environment.name'], 'prod');
-  assert.equal(chat.resource['telemetry.distro.name'], 'flashcat-otel');
+  assert.equal(chat.resource['telemetry.distro.name'], 'flashcat-genai-otel');
   assert.equal(chat.resource['telemetry.distro.version'], '0.1.0');
   assert.equal(chat.resource['telemetry.sdk.language'], 'nodejs');
   assert.equal(chat.attrs['gen_ai.conversation.id'], 'c-123');
@@ -75,7 +75,7 @@ function checkEndToEnd(c, result) {
   assert.equal(toolSpan.parent, agentSpan.spanId);
   assert.equal(chat.traceId, agentSpan.traceId);
   assert.equal(agentSpan.name, 'invoke_agent kefu');
-  assert.equal(agentSpan.scope, 'flashcat.otel');
+  assert.equal(agentSpan.scope, 'flashcat.genai');
   assert.equal(agentSpan.scopeVersion, '0.1.0');
   assert.equal(agentSpan.kind, 1, 'INTERNAL');
   assert.equal(agentSpan.attrs['gen_ai.agent.name'], 'kefu');
@@ -139,11 +139,11 @@ test('Scenario A end to end with CommonJS, span content capture, and masking', a
   }
 });
 
-test('Scenario A end to end with ESM, node --import @flashcat/otel/register, and environment-only configuration', async () => {
+test('Scenario A end to end with ESM, node --import @flashcat/genai-otel/register, and environment-only configuration', async () => {
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
 const lookupOrder = otel.tool('lookup_order', (orderId) => ({ order_id: orderId }));
@@ -157,11 +157,11 @@ await otel.flush();
 console.log('RESULT:' + JSON.stringify({ out, diag: otel.diagnostics() }));
 `;
     const { result, stderr } = await runScript('main', code, {
-      nodeArgs: ['--import', '@flashcat/otel/register'],
+      nodeArgs: ['--import', '@flashcat/genai-otel/register'],
       env: { ...ENV(c), OTEL_SERVICE_NAME: 'kefu-agent' },
     });
     checkEndToEnd(c, result);
-    assert.match(stderr, /\[flashcat-otel\] INFO /, 'init logs a one-line summary');
+    assert.match(stderr, /\[flashcat-genai-otel\] INFO /, 'init logs a one-line summary');
   } finally {
     await c.close();
   }
@@ -171,7 +171,7 @@ test('ESM registration via --import and CommonJS require share state', async () 
   const c = await startCollector();
   try {
     const code = `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 const { OpenAI } = require('openai');
 (async () => {
   const again = otel.init({ serviceName: 'other' });   // register already initialized the SDK. init returns the original diagnostics.
@@ -184,7 +184,7 @@ const { OpenAI } = require('openai');
 `;
     const { result } = await runScript('main', code, {
       ext: 'cjs',
-      nodeArgs: ['--import', '@flashcat/otel/register'],
+      nodeArgs: ['--import', '@flashcat/genai-otel/register'],
       env: { ...ENV(c), OTEL_SERVICE_NAME: 'kefu-agent' },
     });
     assert.equal(result.again.service_name, 'kefu-agent');
@@ -205,7 +205,7 @@ test('A streaming chat in an async generator agent emits a child model span', as
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
 const streamAnswer = otel.agent('streamer', async function* (q) {
@@ -221,7 +221,7 @@ await otel.flush();
 console.log('RESULT:' + JSON.stringify({ text }));
 `;
     const { result } = await runScript('main', code, {
-      nodeArgs: ['--import', '@flashcat/otel/register'],
+      nodeArgs: ['--import', '@flashcat/genai-otel/register'],
       env: { ...ENV(c), OTEL_SERVICE_NAME: 'kefu-agent' },
     });
     assert.equal(result.text, '已发货');
@@ -240,7 +240,7 @@ test('Upstream OpenAI instrumentation for openai <7 adds cache tokens, streaming
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
 const messages = [{ role: 'user', content: 'x' }];
@@ -254,7 +254,7 @@ await otel.flush();
 console.log('RESULT:' + JSON.stringify({ content: data.choices[0].message.content, status: response.status, text, out: r.output_text }));
 `;
     const { result } = await runScript('main', code, {
-      nodeArgs: ['--import', '@flashcat/otel/register'],
+      nodeArgs: ['--import', '@flashcat/genai-otel/register'],
       env: { ...ENV(c), OTEL_SERVICE_NAME: 'kefu-agent', OTEL_METRICS_EXPORTER: 'none' },
     });
     assert.deepEqual(result, { content: '您的订单已发货', status: 200, text: '已发货', out: '您的订单已发货' });
@@ -280,7 +280,7 @@ test('Zero-code OpenAI <7 captures log-event content on spans for non-streaming 
   const c = await startCollector();
   try {
     const code = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
 const messages = [{ role: 'system', content: '你是客服' }, { role: 'user', content: '我的订单' }];
@@ -291,7 +291,7 @@ await otel.flush();
 console.log('RESULT:' + JSON.stringify(otel.diagnostics().content));
 `;
     const { result } = await runScript('main', code, {
-      nodeArgs: ['--import', '@flashcat/otel/register'],
+      nodeArgs: ['--import', '@flashcat/genai-otel/register'],
       env: { ...ENV(c), OTEL_SERVICE_NAME: 'kefu-agent', OTEL_METRICS_EXPORTER: 'none', FLASHCAT_CAPTURE_CONTENT: 'span' },
     });
     assert.equal(result.openai, 'log_events_bridged');

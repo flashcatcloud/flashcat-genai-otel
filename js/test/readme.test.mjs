@@ -37,7 +37,7 @@ after(async () => {
 });
 
 const CHAT_APP_CJS = `
-const otel = require('@flashcat/otel');
+const otel = require('@flashcat/genai-otel');
 const { OpenAI } = require('openai');
 (async () => {
   const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
@@ -49,7 +49,7 @@ const { OpenAI } = require('openai');
 `;
 
 const CHAT_APP_ESM = `
-import * as otel from '@flashcat/otel';
+import * as otel from '@flashcat/genai-otel';
 import OpenAI from 'openai';
 const client = new OpenAI({ baseURL: process.env.FAKE_OPENAI, apiKey: 'sk-test' });
 const answer = otel.agent('kefu', async (q) => (await client.chat.completions.create({ model: 'gpt-4o', messages: [{ role: 'user', content: q }] })).choices[0].message.content);
@@ -69,11 +69,11 @@ function assertChatUnderAgent(c, d) {
   assert.equal(chat.resource['service.name'], 'kefu-agent');
 }
 
-test('README zero-code startup uses environment variables and node --import @flashcat/otel/register app.js with a CommonJS app', async () => {
+test('README zero-code startup uses environment variables and node --import @flashcat/genai-otel/register app.js with a CommonJS app', async () => {
   const c = await startCollector();
   try {
     const { env, argv } = parseBash(snippet('zero-code'));
-    assert.deepEqual(argv, ['--import', '@flashcat/otel/register', 'app.js']);
+    assert.deepEqual(argv, ['--import', '@flashcat/genai-otel/register', 'app.js']);
     env.FLASHCAT_ENDPOINT = c.url + '/v1/traces'; // Use the local mock collector.
     const { result } = await runScript('main', CHAT_APP_CJS, { ext: 'js', nodeArgs: argv.slice(0, -1), env: { ...env, FAKE_OPENAI: openai.url } });
     assertChatUnderAgent(c, result);
@@ -128,7 +128,7 @@ test('README semantic API snippet', async () => {
   const c = await startCollector();
   try {
     await runScript('main', snippet('semantic'), {
-      nodeArgs: ['--import', '@flashcat/otel/register'],
+      nodeArgs: ['--import', '@flashcat/genai-otel/register'],
       env: { OTEL_SERVICE_NAME: 'kefu-agent', FLASHCAT_ENDPOINT: c.url + '/v1/traces', FLASHCAT_API_KEY: 'k:s' },
     });
     const spans = c.spans();

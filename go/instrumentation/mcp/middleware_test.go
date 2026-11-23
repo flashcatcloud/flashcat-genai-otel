@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	flashcatotel "github.com/flashcatcloud/flashcat-otel/go"
+	flashcatgenai "github.com/flashcatcloud/flashcat-genai-otel/go"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -70,7 +70,7 @@ func attrs(s sdktrace.ReadOnlySpan) map[string]string {
 
 func TestToolCallSpanJoinsClientTrace(t *testing.T) {
 	rec := tracetest.NewSpanRecorder()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatotel.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatgenai.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
 	cs := connect(t, WithTracerProvider(tp), WithCaptureContent(true))
 
 	// Client instrumentation sends traceparent in _meta.
@@ -121,7 +121,7 @@ func TestToolCallSpanJoinsClientTrace(t *testing.T) {
 
 func TestToolCallWithInvalidMetaKeepsRemoteParent(t *testing.T) {
 	rec := tracetest.NewSpanRecorder()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatotel.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(flashcatgenai.NewSpanProcessor()), sdktrace.WithSpanProcessor(rec))
 	handler := Middleware(WithTracerProvider(tp))(func(context.Context, string, mcp.Request) (mcp.Result, error) {
 		return &mcp.CallToolResult{}, nil
 	})

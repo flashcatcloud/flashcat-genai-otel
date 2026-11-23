@@ -16,7 +16,7 @@ from flashcat.instrumentation.mcp import MCPInstrumentor
 
 @pytest.fixture
 def instrumented(monkeypatch):
-    """Set the content capture environment variable before instrumenting, as flashcat.otel.init does, because setup reads it once."""
+    """Set the content capture environment variable before instrumenting, as flashcat.genai.init does, because setup reads it once."""
     insts = []
 
     def make(content: str = "SPAN_ONLY") -> InMemorySpanExporter:

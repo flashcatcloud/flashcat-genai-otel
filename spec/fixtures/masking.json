@@ -1,5 +1,5 @@
 {
-  "comment": "由 Python 实现（flashcat.otel._processors）生成，是各语言脱敏实现的一致性基准。",
+  "comment": "由 Python 实现（flashcat.genai._processors）生成，是各语言脱敏实现的一致性基准。",
   "replacement_l1": "[REDACTED]",
   "sensitive_key_regex": "(^|[._-])(authorization|api[-_]?key|apikey|password|passwd|secret|client[-_]?secret|token|access[-_]?token|refresh[-_]?token|auth[-_]?token|cookie|set[-_]?cookie|private[-_]?key)$",
   "sensitive_key_flags": "i",
